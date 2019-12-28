@@ -5,8 +5,6 @@
 #include <iostream>
 #include <SDL.h>
 
-#define MAIN_MAP_W 1200
-#define MAIN_MAP_H 600
 
 int main(int argc, char* argv[])
 {
