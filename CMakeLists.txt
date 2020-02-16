@@ -14,6 +14,12 @@ INCLUDE_DIRECTORIES(${SDL2_INCLUDE_DIRS})
 SET (SRC_FILES
     src/main.cpp 
     src/pch.cpp
+    src/map.cpp
+    src/utils.cpp 
+
+    include/map.h
+    include/utils.h
+    include/point.h
     )
 INCLUDE_DIRECTORIES( include ./include )
 
