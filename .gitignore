@@ -415,6 +415,8 @@ MigrationBackup/
 
 # custom project settings
 
+.vscode/
+
 build/
 # output
 Doom-Engine
