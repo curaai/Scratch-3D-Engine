@@ -1,28 +1,13 @@
-CMAKE_MINIMUM_REQUIRED (VERSION 3.15 )
-# project setting
-PROJECT ( Doom-Engine)
-SET( EXECUTABLE_OUTPUT_PATH ${CMAKE_SOURCE_DIR} )
+CMAKE_MINIMUM_REQUIRED(VERSION 3.15.0)
+
+SET(proj_name Doom-Engine)
+PROJECT( ${proj_name} )
 
 # C++ settings
-SET(CMAKE_CXX_STANDARD 11)
+SET(CMAKE_CXX_STANDARD 14)
 
-# loading SDL2 package 
-FIND_PACKAGE(SDL2 REQUIRED)
-INCLUDE_DIRECTORIES(${SDL2_INCLUDE_DIRS}) 
+include_directories(src)
 
-# set source and headers
-SET (SRC_FILES
-    src/main.cpp 
-    src/pch.cpp
-    src/map.cpp
-    src/utils.cpp 
-
-    include/map.h
-    include/utils.h
-    include/point.h
-    )
-INCLUDE_DIRECTORIES( include ./include )
-
-# build 
-ADD_EXECUTABLE( Doom-Engine ${SRC_FILES} )
-TARGET_LINK_LIBRARIES(Doom-Engine ${SDL2_LIBRARIES})
+add_subdirectory(src)
+add_subdirectory(tests)
+add_subdirectory(extern/googletest)

@@ -1,0 +1,27 @@
+CMAKE_MINIMUM_REQUIRED (VERSION 3.15 )
+# project setting
+SET( BINARY ${CMAKE_PROJECT_NAME} )
+SET( EXECUTABLE_OUTPUT_PATH ${CMAKE_SOURCE_DIR} )
+SET( LIBRARY_OUTPUT_PATH ${CMAKE_SOURCE_DIR} )
+
+# loading SDL2 package 
+FIND_PACKAGE(SDL2 REQUIRED)
+INCLUDE_DIRECTORIES(${SDL2_INCLUDE_DIRS}) 
+
+# set source and headers
+SET (SRC_FILES
+    main.cpp 
+    pch.cpp
+    map.cpp
+    utils.cpp 
+
+    map.h
+    utils.h
+    point.h
+    )
+
+# build 
+ADD_EXECUTABLE( ${BINARY}_run  ${SRC_FILES} )
+add_library(${BINARY}_lib STATIC ${SRC_FILES} )
+TARGET_LINK_LIBRARIES( ${BINARY}_run  ${SDL2_LIBRARIES})
+TARGET_LINK_LIBRARIES( ${BINARY}_lib  ${SDL2_LIBRARIES})

@@ -422,3 +422,9 @@ build/
 Doom-Engine
 Doom-Engine.exe
 **/Doom-Engine.exe
+
+Doom-Engine_run
+
+Doom-Engine_tst
+
+extern/googletest/
