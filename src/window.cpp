@@ -1,6 +1,10 @@
 #include "window.h"
 
-Window::Window(const string name, const uint8_t width, const uint8_t height)
+#include "utils.h"
+#include <iostream>
+
+
+Window::Window(const string name, const int width, const int height)
     : name(name)
     , w(width)
     , h(height)
@@ -10,11 +14,11 @@ Window::Window(const string name, const uint8_t width, const uint8_t height)
 
     _window = SDL_CreateWindow(
         name.c_str(), 
-        SDL_WINDOWPOS_UNDEFINED,
-        SDL_WINDOWPOS_UNDEFINED,
+        SDL_WINDOWPOS_CENTERED, 
+        SDL_WINDOWPOS_CENTERED, 
         w, 
         h,
-        SDL_WINDOW_SHOWN
+        0
     );
     _renderer = SDL_CreateRenderer(_window, -1, 0);
 }
@@ -38,5 +42,14 @@ void Window::handleEvent()
 void Window::render()
 {
     SDL_RenderClear(_renderer);
+
+    auto c = rgba {255, 0, 0, 255};
+    util::sdl::draw_circle(_renderer, 300, 300, 10, c, true);
+
     SDL_RenderPresent(_renderer);
+}
+
+void Window::update()
+{
+
 }

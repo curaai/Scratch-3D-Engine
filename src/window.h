@@ -8,7 +8,7 @@ using namespace std;
 class Window
 {
 public:
-    Window(const string name, const uint8_t width, const uint8_t height);
+    Window(const string name, const int width, const int height);
     ~Window();
 
     void handleEvent(void);
@@ -22,6 +22,6 @@ private:
     bool isRunning;
 
     std::string name;
-    uint8_t w;
-    uint8_t h; 
+    int w;
+    int h; 
 };

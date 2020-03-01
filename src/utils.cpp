@@ -1,4 +1,7 @@
 #include "utils.h"
+#include "bean.h"
+
+#include <SDL.h>
 #include <string>
 
 
@@ -22,6 +25,72 @@ namespace util {
             }
 
             return result;
+        }
+    }
+    namespace sdl {
+        void set_pixel(SDL_Renderer *rend, int x, int y, rgba c)
+        {
+            SDL_SetRenderDrawColor(rend, c.r, c.g, c.b, c.a);
+            SDL_RenderDrawPoint(rend, x, y);
+            SDL_SetRenderDrawColor(rend, 0,0,0,255);
+        }
+        void draw_circle(SDL_Renderer *rend, int n_cx, int n_cy, int radius, rgba c, bool fill)
+        {
+            double error = (double)-radius;
+            double x = (double)radius - 0.5;
+            double y = (double)0.5;
+            double cx = n_cx - 0.5;
+            double cy = n_cy - 0.5;
+
+            int drawX, drawY;
+            while (x >= y)
+            {
+                set_pixel(rend, (int)(cx + x), (int)(cy + y), c);
+                set_pixel(rend, (int)(cx + y), (int)(cy + x), c);
+
+                if (x != 0)
+                {
+                    set_pixel(rend, (int)(cx - x), (int)(cy + y), c);
+                    set_pixel(rend, (int)(cx + y), (int)(cy - x), c);
+                }
+
+                if (y != 0)
+                {
+                    set_pixel(rend, (int)(cx + x), (int)(cy - y), c);
+                    set_pixel(rend, (int)(cx - y), (int)(cy + x), c);
+                }
+
+                if (x != 0 && y != 0)
+                {
+                    set_pixel(rend, (int)(cx - x), (int)(cy - y), c);
+                    set_pixel(rend, (int)(cx - y), (int)(cy - x), c);
+                }
+
+                error += y;
+                ++y;
+                error += y;
+
+                if (error >= 0)
+                {
+                    --x;
+                    error -= x;
+                    error -= x;
+                }
+            }
+            if (fill)
+                fill_circle(rend, cx, cy, radius, c);
+        }
+        void fill_circle(SDL_Renderer *rend, int cx, int cy, int radius, rgba c)
+        {
+            for (double dy = 1; dy <= radius; dy += 1.0)
+            {
+                double dx = floor(sqrt((2.0 * radius * dy) - (dy * dy)));
+                int x = cx - dx;
+                SDL_SetRenderDrawColor(rend, c.r, c.g, c.b, c.a);
+                SDL_RenderDrawLine(rend, cx - dx, cy + dy - radius, cx + dx, cy + dy - radius);
+                SDL_RenderDrawLine(rend, cx - dx, cy - dy + radius, cx + dx, cy - dy + radius);
+                SDL_SetRenderDrawColor(rend, 0,0,0,255);
+            }
         }
     }
 }

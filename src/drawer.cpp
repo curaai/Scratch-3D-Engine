@@ -20,10 +20,3 @@ private:
     int h, w; 
 
 };
-
-Drawer::Drawer(SDL_Window* parent_window, const unsigned int w, const unsigned int h)
-{   
-    arr = new uint32_t[h][w]();
-    this->w = w;
-    this->h = h;
-}
