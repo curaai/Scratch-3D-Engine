@@ -9,19 +9,10 @@ FIND_PACKAGE(SDL2 REQUIRED)
 INCLUDE_DIRECTORIES(${SDL2_INCLUDE_DIRS}) 
 
 # set source and headers
-SET (SRC_FILES
-    main.cpp 
-    pch.cpp
-    map.cpp
-    utils.cpp 
-
-    map.h
-    utils.h
-    point.h
-    )
+FILE(GLOB_RECURSE SRC_FILES LIST_DIRECTORIES false *.h *.cpp)
 
 # build 
 ADD_EXECUTABLE( ${BINARY}_run  ${SRC_FILES} )
-add_library(${BINARY}_lib STATIC ${SRC_FILES} )
+ADD_LIBRARY(${BINARY}_lib STATIC ${SRC_FILES} )
 TARGET_LINK_LIBRARIES( ${BINARY}_run  ${SDL2_LIBRARIES})
 TARGET_LINK_LIBRARIES( ${BINARY}_lib  ${SDL2_LIBRARIES})
