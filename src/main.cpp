@@ -2,6 +2,8 @@
 //
 
 #include "pch.h"
+#include "window.h"
+
 #include <iostream>
 #include <SDL.h>
 
@@ -10,24 +12,14 @@
 
 int main(int argc, char* argv[])
 {
-	SDL_Init(SDL_INIT_EVERYTHING);
-	SDL_Window* window = nullptr;
-	SDL_Renderer* renderer = nullptr; 
+	auto win = new Window("2d", MAIN_MAP_W, MAIN_MAP_H);
 
-	SDL_CreateWindowAndRenderer(MAIN_MAP_W, MAIN_MAP_H, SDL_WINDOW_SHOWN | SDL_WINDOW_INPUT_FOCUS, &window, &renderer);
-	SDL_Event event;
-	while (1) {
-		SDL_PollEvent(&event);
-		if (event.type == SDL_QUIT) {
-			break;
-		}
-
-		SDL_RenderClear(renderer);
-		SDL_RenderPresent(renderer);
+	while (win->running()) {
+		win->handleEvent();
+		win->update();
+		win->render();
 	}
-
-	SDL_DestroyRenderer(renderer);
-	SDL_DestroyWindow(window);
+	delete win;
 
 	return 0;
 }
