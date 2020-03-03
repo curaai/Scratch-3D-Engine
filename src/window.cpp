@@ -1,6 +1,6 @@
 #include "window.h"
-
 #include "utils.h"
+
 #include <iostream>
 
 
@@ -39,12 +39,12 @@ void Window::handleEvent()
     }
 }
 
-void Window::render()
+void Window::render(vector<IDrawable*>& renderObjects)
 {
     SDL_RenderClear(_renderer);
 
-    auto c = rgba {255, 0, 0, 255};
-    util::sdl::draw_circle(_renderer, 300, 300, 10, c, true);
+    for (IDrawable* rendObj : renderObjects)
+        rendObj->draw(_renderer);
 
     SDL_RenderPresent(_renderer);
 }

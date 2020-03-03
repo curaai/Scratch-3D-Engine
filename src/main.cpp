@@ -2,6 +2,9 @@
 //
 
 #include "window.h"
+#include "world.h"
+#include "user.h"
+#include "bean.h"
 
 #include <iostream>
 #include <SDL.h>
@@ -12,11 +15,15 @@
 int main(int argc, char* argv[])
 {
 	auto win = new Window("2d", MAIN_MAP_W, MAIN_MAP_H);
+	auto world = new World();
+	User* user = new User(30, 30, rgba {255, 255, 0, 255});
+
+	world->addElement(user);
 
 	while (win->running()) {
 		win->handleEvent();
 		win->update();
-		win->render();
+		win->render(world->getElements());
 	}
 	delete win;
 

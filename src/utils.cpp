@@ -43,28 +43,20 @@ namespace util {
             double cy = n_cy - 0.5;
 
             int drawX, drawY;
+            auto drawPixels = [&](int x, int y) {
+                set_pixel(rend, x, y, c);
+                set_pixel(rend, y, x, c);
+                set_pixel(rend, x, -y, c);
+                set_pixel(rend, y, -x, c);
+                set_pixel(rend, -x, y, c);
+                set_pixel(rend, -y, x, c);
+                set_pixel(rend, -x, -y, c);
+                set_pixel(rend, -y, -x, c);
+            };
+
             while (x >= y)
             {
-                set_pixel(rend, (int)(cx + x), (int)(cy + y), c);
-                set_pixel(rend, (int)(cx + y), (int)(cy + x), c);
-
-                if (x != 0)
-                {
-                    set_pixel(rend, (int)(cx - x), (int)(cy + y), c);
-                    set_pixel(rend, (int)(cx + y), (int)(cy - x), c);
-                }
-
-                if (y != 0)
-                {
-                    set_pixel(rend, (int)(cx + x), (int)(cy - y), c);
-                    set_pixel(rend, (int)(cx - y), (int)(cy + x), c);
-                }
-
-                if (x != 0 && y != 0)
-                {
-                    set_pixel(rend, (int)(cx - x), (int)(cy - y), c);
-                    set_pixel(rend, (int)(cx - y), (int)(cy - x), c);
-                }
+                drawPixels(cx+x, cy+y);
 
                 error += y;
                 ++y;
@@ -80,6 +72,8 @@ namespace util {
             if (fill)
                 fill_circle(rend, cx, cy, radius, c);
         }
+        // can be optimize with join boundary pixels
+        // now using float-operation
         void fill_circle(SDL_Renderer *rend, int cx, int cy, int radius, rgba c)
         {
             for (double dy = 1; dy <= radius; dy += 1.0)

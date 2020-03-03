@@ -1,5 +1,8 @@
-#include <SDL.h>
+#pragma once 
 
+#include "IDrawable.h"
+
+#include <SDL.h>
 #include <string>
 #include <cstdint>
 
@@ -12,7 +15,7 @@ public:
     ~Window();
 
     void handleEvent(void);
-    void render(void);
+    void render(vector<IDrawable*>& renderObjects);
     void update(void); 
     bool running(void) { return isRunning; }
 
