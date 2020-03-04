@@ -35,3 +35,28 @@ void User::turn(SDL_Keycode dir)
     else if(dir == SDLK_RIGHT)
         ori -= oriSensitivity;
 }
+
+void User::move(SDL_Keycode dir)
+{
+    int _ori = 0;
+    switch(dir) {
+    case SDLK_w:
+        _ori = 0;
+        break;
+    case SDLK_s:
+        _ori = 180;
+        break;
+    case SDLK_a:
+        _ori = 90;
+        break;
+    case SDLK_d:
+        _ori = 270;
+        break;
+    }
+
+    double deg = deg2rad(ori + _ori);
+
+    float newX= pos.x + cos(deg) * speed;
+    float newY= pos.y - sin(deg) * speed;
+    pos = Point{newX, newY}; 
+}

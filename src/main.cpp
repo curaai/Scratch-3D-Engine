@@ -34,6 +34,12 @@ int main(int argc, char* argv[])
 					case SDLK_RIGHT:
 						user->turn(key);
 						break; 
+					case SDLK_w:
+					case SDLK_a:
+					case SDLK_d:
+					case SDLK_s:
+						user->move(key);
+						break;
 				}
 				break;
 

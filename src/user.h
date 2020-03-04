@@ -12,6 +12,7 @@ public:
     void draw(SDL_Renderer* rend) override;
 
     void turn(SDL_Keycode dir);
+    void move(SDL_Keycode dir);
 
 public:
     rgba color;

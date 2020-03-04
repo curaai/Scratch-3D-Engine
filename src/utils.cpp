@@ -38,11 +38,14 @@ namespace util {
         // after draw points to optimize
         void draw_circle(SDL_Renderer *rend, int n_cx, int n_cy, int radius, rgba c, bool fill)
         {
+
             double error = (double)-radius;
             double x = (double)radius - 0.5;
             double y = (double)0.5;
             double cx = n_cx - 0.5;
             double cy = n_cy - 0.5;
+            fill_circle(rend, cx, cy, radius, c);
+            return;
 
             int drawX, drawY;
             auto drawPixels = [&](int x, int y) {
