@@ -24,3 +24,4 @@ namespace util {
     }
 }
 
+double deg2rad(double deg);

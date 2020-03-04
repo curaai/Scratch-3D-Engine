@@ -28,17 +28,6 @@ Window::~Window()
     SDL_DestroyRenderer(_renderer);
 }
 
-void Window::handleEvent()
-{
-    SDL_Event event;
-    SDL_PollEvent(&event);
-    switch(event.type) 
-    {
-    case SDL_QUIT:
-        break;
-    }
-}
-
 void Window::render(vector<IDrawable*>& renderObjects)
 {
     SDL_RenderClear(_renderer);

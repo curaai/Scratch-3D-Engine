@@ -11,8 +11,13 @@ public:
 public:
     void draw(SDL_Renderer* rend) override;
 
+    void turn(SDL_Keycode dir);
+
 public:
     rgba color;
     Point pos;    
-    int size=5;
+    int size=20;
+    int speed=10;
+    float ori=90;
+    float oriSensitivity=3;
 };

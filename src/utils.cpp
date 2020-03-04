@@ -2,6 +2,7 @@
 #include "bean.h"
 
 #include <SDL.h>
+#include <math.h>
 #include <string>
 
 
@@ -34,6 +35,7 @@ namespace util {
             SDL_RenderDrawPoint(rend, x, y);
             SDL_SetRenderDrawColor(rend, 0,0,0,255);
         }
+        // after draw points to optimize
         void draw_circle(SDL_Renderer *rend, int n_cx, int n_cy, int radius, rgba c, bool fill)
         {
             double error = (double)-radius;
@@ -73,7 +75,8 @@ namespace util {
                 fill_circle(rend, cx, cy, radius, c);
         }
         // can be optimize with join boundary pixels
-        // now using float-operation
+        // now using float-operation 
+        // use method to drawlines
         void fill_circle(SDL_Renderer *rend, int cx, int cy, int radius, rgba c)
         {
             for (double dy = 1; dy <= radius; dy += 1.0)
@@ -87,4 +90,9 @@ namespace util {
             }
         }
     }
+}
+
+double deg2rad(double deg) 
+{
+    return (deg * M_PI ) / 180;
 }

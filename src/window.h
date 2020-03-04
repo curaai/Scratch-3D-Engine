@@ -14,7 +14,6 @@ public:
     Window(const string name, const int width, const int height);
     ~Window();
 
-    void handleEvent(void);
     void render(vector<IDrawable*>& renderObjects);
     void update(void); 
     bool running(void) { return isRunning; }
