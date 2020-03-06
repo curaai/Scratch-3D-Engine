@@ -1,11 +1,15 @@
 #pragma once 
 
+#include "bean.h"
 #include <SDL.h>
 
 class IDrawable
 {
 public:
-    IDrawable(){};
+    IDrawable(rgba c)
+    : c(c)
+    {};
     ~IDrawable(){};
     virtual void draw(SDL_Renderer* rend) {};
+    rgba c;    
 };

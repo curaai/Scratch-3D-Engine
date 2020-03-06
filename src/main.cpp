@@ -4,6 +4,7 @@
 #include "window.h"
 #include "world.h"
 #include "user.h"
+#include "wall.h"
 #include "bean.h"
 
 #include <iostream>
@@ -17,8 +18,12 @@ int main(int argc, char* argv[])
 	auto win = new Window("2d", MAIN_MAP_W, MAIN_MAP_H);
 	auto world = new World();
 	User* user = new User(300, 300, rgba {255, 255, 0, 255});
+	Wall* wall1 = new Wall(Point{10, 10}, Point{10, 200}, rgba{255, 0, 0, 255});
+	Wall* wall2 = new Wall(Point{50, 50}, Point{400, 400}, rgba{0, 0, 255, 255});
 
 	world->addElement(user);
+	world->addElement(wall1);
+	world->addElement(wall2);
 
 	SDL_Keycode key;
 	SDL_Event event;

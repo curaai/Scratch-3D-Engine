@@ -15,7 +15,6 @@ public:
     void move(SDL_Keycode dir);
 
 public:
-    rgba color;
     Point pos;    
     int size=20;
     int speed=10;
