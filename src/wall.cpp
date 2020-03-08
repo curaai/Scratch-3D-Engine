@@ -28,10 +28,9 @@ void Wall::draw(SDL_Renderer* rend, User* user)
 }
 Point Wall::getRelativeCoord(const Point& pt, User* user)
 {
-    float ori = deg2rad(user->ori);
+    float ori = deg2rad(450 - user->ori);
     Point _pt = pt - user->pos;
-    _pt.y = -_pt.y;
-    float newx = sin(ori) * _pt.x + cos(ori) * _pt.y;
-    float newy = cos(ori) * _pt.x - sin(ori) * _pt.y;
+    float newx = cos(ori) * _pt.x + sin(ori) * _pt.y;
+    float newy = - sin(ori) * _pt.x + cos(ori) * _pt.y;
     return (Point{newx, newy} + user->pos);
 }

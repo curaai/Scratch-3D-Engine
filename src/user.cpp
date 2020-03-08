@@ -12,9 +12,11 @@ User::User(float x, float y, rgba c)
 
 void User::draw(SDL_Renderer* rend)
 {
-    util::sdl::draw_circle(rend, pos.x, pos.y, size, c, true);
+    float tempOri = ori;
+    if (isRelative)
+        ori = 90;
 
-    // set line length as 5 temporary 
+    util::sdl::draw_circle(rend, pos.x, pos.y, size, c, true);
 
     SDL_SetRenderDrawColor(rend, c.r, c.g, c.b, c.a);
 
@@ -25,14 +27,7 @@ void User::draw(SDL_Renderer* rend)
     SDL_RenderDrawLineF(rend, pos.x, pos.y, pos.x+lineX, pos.y-lineY);
 
     SDL_SetRenderDrawColor(rend, 0,0,0,255);
-}
 
-void User::draw(SDL_Renderer* rend, bool isRelative)
-{
-    float tempOri = ori;
-    if (isRelative)
-        ori = 90;
-    draw(rend);
     ori = tempOri;
 }
 

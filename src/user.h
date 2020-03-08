@@ -10,8 +10,6 @@ public:
 
 public:
     void draw(SDL_Renderer* rend) override;
-    void draw(SDL_Renderer* rend);
-
     void turn(SDL_Keycode dir);
     void move(SDL_Keycode dir);
 
