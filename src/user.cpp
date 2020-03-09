@@ -18,13 +18,22 @@ void User::draw(SDL_Renderer* rend)
 
     SDL_SetRenderDrawColor(rend, c.r, c.g, c.b, c.a);
 
-    double _ori = deg2rad(ori);
+    double _ori = deg2rad(90 + ori);
 
     int lineX = cos(_ori) * 50;
     int lineY = sin(_ori) * 50;
     SDL_RenderDrawLineF(rend, pos.x, pos.y, pos.x+lineX, pos.y-lineY);
 
     SDL_SetRenderDrawColor(rend, 0,0,0,255);
+}
+
+void User::draw(SDL_Renderer* rend, bool isRelative)
+{
+    float tempOri = ori;
+    if (isRelative)
+        ori = 0;
+    draw(rend);
+    ori = tempOri;
 }
 
 void User::turn(SDL_Keycode dir)
@@ -49,11 +58,11 @@ void User::move(SDL_Keycode dir)
         _ori = 90;
         break;
     case SDLK_d:
-        _ori = 270;
+        _ori = 270; 
         break;
     }
 
-    double deg = deg2rad(ori + _ori);
+    double deg = deg2rad(_ori + ori);
 
     float newX= pos.x + cos(deg) * speed;
     float newY= pos.y - sin(deg) * speed;

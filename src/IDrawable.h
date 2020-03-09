@@ -6,10 +6,8 @@
 class IDrawable
 {
 public:
-    IDrawable(rgba c)
-    : c(c)
-    {};
+    IDrawable(rgba c) : c(c) {};
     ~IDrawable(){};
-    virtual void draw(SDL_Renderer* rend) {};
+    virtual void draw(SDL_Renderer* rend)=0;
     rgba c;    
 };

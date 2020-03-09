@@ -1,6 +1,7 @@
 #pragma once 
 
-#include "IDrawable.h"
+#include "user.h"
+#include "object.h"
 
 #include <vector>
 
@@ -11,9 +12,9 @@ public:
     ~World(){};
 
 public:
-    void addElement(IDrawable* element);
-    std::vector<IDrawable*>& getElements(void);
+    void addElement(Object* element);
+    virtual std::vector<Object*>& getElements(void);
 
 private:
-    std::vector<IDrawable*> elements;
+    std::vector<Object*> elements;
 };

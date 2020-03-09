@@ -1,11 +1,11 @@
 #include "world.h"
 
-void World::addElement(IDrawable* element)
+void World::addElement(Object* element)
 {
     elements.push_back(element);
 }
 
-std::vector<IDrawable*>& World::getElements(void)
+std::vector<Object*>& World::getElements(void)
 {
     return elements;
 }
