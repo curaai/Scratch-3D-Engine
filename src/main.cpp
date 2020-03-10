@@ -18,6 +18,7 @@ int main(int argc, char* argv[])
 {
 	User* user = new User(300, 300, rgba {255, 255, 0, 255});
 	auto win = new RelativeWindow("2d", MAIN_MAP_W, MAIN_MAP_H, user);
+	// win->relativeMode = false;
 	auto world = new World();
 	Wall* wall1 = new Wall(Point{100, 100}, Point{400, 100}, rgba{255, 0, 0, 255});
 	// Wall* wall2 = new Wall(Point{50, 50}, Point{400, 400}, rgba{0, 0, 255, 255});

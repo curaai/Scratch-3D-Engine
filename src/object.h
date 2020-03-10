@@ -9,5 +9,6 @@ public:
     Object(rgba c) : IDrawable(c) {};
     ~Object(){};
 
+    virtual void draw(SDL_Renderer* rend)=0;
     virtual void draw(SDL_Renderer* rend, User* user)=0;
 };

@@ -31,7 +31,7 @@ Point Wall::getRelativeCoord(const Point& pt, User* user)
     float ori = deg2rad(user->ori);
     Point _pt = pt - user->pos;
     _pt.y = -_pt.y;
-    float newx = cos(ori) * _pt.x - sin(ori) * _pt.y;
-    float newy = -(sin(ori) * _pt.x + cos(ori) * _pt.y);
+    float newx = sin(ori) * _pt.x + cos(ori) * _pt.y;
+    float newy = cos(ori) * _pt.x - sin(ori) * _pt.y;
     return (Point{newx, newy} + user->pos);
 }

@@ -18,7 +18,7 @@ void User::draw(SDL_Renderer* rend)
 
     SDL_SetRenderDrawColor(rend, c.r, c.g, c.b, c.a);
 
-    double _ori = deg2rad(90 + ori);
+    double _ori = deg2rad(ori);
 
     int lineX = cos(_ori) * 50;
     int lineY = sin(_ori) * 50;
@@ -31,7 +31,7 @@ void User::draw(SDL_Renderer* rend, bool isRelative)
 {
     float tempOri = ori;
     if (isRelative)
-        ori = 0;
+        ori = 90;
     draw(rend);
     ori = tempOri;
 }
