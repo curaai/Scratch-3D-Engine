@@ -7,6 +7,7 @@
 #include "user.h"
 #include "wall.h"
 #include "bean.h"
+#include "Engine/RayCasting.h"
 
 #include <iostream>
 #include <SDL.h>

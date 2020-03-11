@@ -4,6 +4,9 @@ SET( BINARY ${CMAKE_PROJECT_NAME} )
 SET( EXECUTABLE_OUTPUT_PATH ${CMAKE_SOURCE_DIR} )
 SET( LIBRARY_OUTPUT_PATH ${CMAKE_SOURCE_DIR} )
 
+# Add Subdirectory as library core engine 
+add_subdirectory(./Engine ../build/src/engine)
+
 # loading SDL2 package 
 FIND_PACKAGE(SDL2 REQUIRED)
 INCLUDE_DIRECTORIES(${SDL2_INCLUDE_DIRS}) 
