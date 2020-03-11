@@ -97,6 +97,31 @@ namespace util {
 
 double deg2rad(double deg) 
 {
-    
     return (450-deg) * M_PI / 180;
 }
+
+bool getIntersectPoint(const Point& AP1, const Point& AP2, const Point& BP1, const Point& BP2, Point* IP)
+{
+    double t;
+    double s;
+    double under = (BP2.y-BP1.y)*(AP2.x-AP1.x)-(BP2.x-BP1.x)*(AP2.y-AP1.y);
+
+    if(under==0)
+     return false;
+
+    double _t = (BP2.x-BP1.x)*(AP1.y-BP1.y) - (BP2.y-BP1.y)*(AP1.x-BP1.x);
+    double _s = (AP2.x-AP1.x)*(AP1.y-BP1.y) - (AP2.y-AP1.y)*(AP1.x-BP1.x);
+
+    t = _t/under;
+    s = _s/under;
+
+    if(t<0.0 || t>1.0 || s<0.0 || s>1.0)
+        return false;
+    if(_t==0 && _s==0)
+        return false;
+    IP->x = AP1.x + t * (double)(AP2.x-AP1.x);
+    IP->y = AP1.y + t * (double)(AP2.y-AP1.y);
+    return true;
+}
+
+ 

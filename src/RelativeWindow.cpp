@@ -19,5 +19,4 @@ void RelativeWindow::render(vector<Wall*>& renderObjects)
             object->draw(_renderer);
     }
 
-    SDL_RenderPresent(_renderer);
 }

@@ -25,3 +25,4 @@ namespace util {
 }
 
 double deg2rad(double deg);
+bool getIntersectPoint(const Point& AP1, const Point& AP2, const Point& BP1, const Point& BP2, Point* IP);

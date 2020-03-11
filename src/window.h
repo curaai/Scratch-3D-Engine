@@ -19,7 +19,7 @@ public:
     void update(void); 
     bool running(void) { return isRunning; }
 
-protected: 
+public: 
     SDL_Window* _window; 
     SDL_Renderer* _renderer; 
     bool isRunning;
