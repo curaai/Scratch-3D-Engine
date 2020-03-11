@@ -13,8 +13,6 @@ User::User(float x, float y, rgba c)
 void User::draw(SDL_Renderer* rend)
 {
     float tempOri = ori;
-    if (isRelative)
-        ori = 90;
 
     util::sdl::draw_circle(rend, pos.x, pos.y, size, c, true);
 
@@ -34,9 +32,9 @@ void User::draw(SDL_Renderer* rend)
 void User::turn(SDL_Keycode dir)
 {
     if(dir == SDLK_LEFT)
-        ori += oriSensitivity;
-    else if(dir == SDLK_RIGHT)
         ori -= oriSensitivity;
+    else if(dir == SDLK_RIGHT)
+        ori += oriSensitivity;
 }
 
 void User::move(SDL_Keycode dir)
@@ -50,10 +48,10 @@ void User::move(SDL_Keycode dir)
         _ori = 180;
         break;
     case SDLK_a:
-        _ori = 90;
+        _ori = 270; 
         break;
     case SDLK_d:
-        _ori = 270; 
+        _ori = 90;
         break;
     }
 

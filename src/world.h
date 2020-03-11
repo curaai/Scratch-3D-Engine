@@ -1,7 +1,7 @@
 #pragma once 
 
 #include "user.h"
-#include "object.h"
+#include "wall.h"
 
 #include <vector>
 
@@ -12,9 +12,12 @@ public:
     ~World(){};
 
 public:
-    void addElement(Object* element);
-    virtual std::vector<Object*>& getElements(void);
+    void addElement(Wall* element);
+    virtual std::vector<Wall*>& getElements(void);
 
+public:
+    const int width = 320;
+    const int height = 320;
 private:
-    std::vector<Object*> elements;
+    std::vector<Wall*> elements;
 };

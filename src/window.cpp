@@ -28,11 +28,11 @@ Window::~Window()
     SDL_DestroyRenderer(_renderer);
 }
 
-void Window::render(vector<IDrawable*>& renderObjects)
+void Window::render(vector<Wall*>& renderObjects)
 {
     SDL_RenderClear(_renderer);
 
-    for (IDrawable* rendObj : renderObjects)
+    for (Wall* rendObj : renderObjects)
         rendObj->draw(_renderer);
 
     SDL_RenderPresent(_renderer);

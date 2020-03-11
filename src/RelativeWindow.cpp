@@ -7,7 +7,7 @@ RelativeWindow::RelativeWindow(const string name, const int width, const int hei
     user->isRelative = &relativeMode;
 }
 
-void RelativeWindow::render(vector<Object*>& renderObjects)
+void RelativeWindow::render(vector<Wall*>& renderObjects)
 {
     SDL_RenderClear(_renderer);
 

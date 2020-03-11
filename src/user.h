@@ -17,7 +17,7 @@ public:
     Point pos;    
     int size=20;
     int speed=10;
-    float ori=90;
+    float ori=0;
     float oriSensitivity=3;
     
     bool* isRelative;

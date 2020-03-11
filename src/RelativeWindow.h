@@ -1,17 +1,17 @@
 #pragma once 
 
 #include "window.h"
-#include "object.h"
+#include "wall.h"
 
 class RelativeWindow : public Window
 {
 public:
     RelativeWindow(const string name, const int width, const int height, User* user);
     ~RelativeWindow(){};
-    void render(vector<Object*>& renderObjects);
+    void render(vector<Wall*>& renderObjects);
 
 public:
-    bool relativeMode = true;
+    bool relativeMode=false;
 protected:
     User* user;
 };

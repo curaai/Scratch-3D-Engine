@@ -1,11 +1,11 @@
 #include "world.h"
 
-void World::addElement(Object* element)
+void World::addElement(Wall* element)
 {
     elements.push_back(element);
 }
 
-std::vector<Object*>& World::getElements(void)
+std::vector<Wall*>& World::getElements(void)
 {
     return elements;
 }

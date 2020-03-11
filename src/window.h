@@ -1,6 +1,7 @@
 #pragma once 
 
 #include "IDrawable.h"
+#include "wall.h"
 
 #include <SDL.h>
 #include <string>
@@ -14,7 +15,7 @@ public:
     Window(const string name, const int width, const int height);
     ~Window();
 
-    void render(vector<IDrawable*>& renderObjects);
+    void render(vector<Wall*>& renderObjects);
     void update(void); 
     bool running(void) { return isRunning; }
 
