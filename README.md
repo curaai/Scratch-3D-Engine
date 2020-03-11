@@ -2,6 +2,9 @@
 
  make own Doom-game!
 
+## Demo 
+ 
+ ![2d_raycasting](docs/2d-simple_ray-casting.gif)
 
 ### reference
 
