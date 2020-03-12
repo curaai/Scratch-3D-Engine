@@ -1,12 +1,15 @@
 #include "RayCasting.h"
 #include "../utils.h"
 
+#include <cmath>
+
 
 RayEngine::RayEngine(User& user, World& world)
     : user(user)
     , world(world)
+    , rayWidth(world.width / (fov + fov))
+    , maxRayDistance(std::sqrt(std::pow(world.width, 2) + std::pow(world.height, 2)))
 {
-
 }
 
 
@@ -34,15 +37,26 @@ void RayEngine::draw(SDL_Renderer* rend)
 
         // check ray stuck on wall
         Point cross;
+        bool isCross = false;
         for(Wall* w : world.getElements()) {
-            bool isCross = getIntersectPoint(w->a, w->b, pos, rayEnd, &cross);
-            if (isCross)
+            if (getIntersectPoint(w->a, w->b, pos, rayEnd, &cross)) {
                 rayEnd = cross;
-        }
 
-        // draw ray 
-        int res = SDL_SetRenderDrawColor(rend, 255, 255, 255, 255);
-        res = SDL_RenderDrawLineF(rend, pos.x, pos.y, rayEnd.x, rayEnd.y);
-        res = SDL_SetRenderDrawColor(rend, 0,0,0,255);
+                rgba c = w->c;
+                const float angle = theta - (user.ori-fov);
+                // const float dist = rayEnd
+                // draw ray 
+                auto dist = (maxRayDistance - pos.eucDist(rayEnd)) / maxRayDistance * world.height;
+                
+                SDL_SetRenderDrawColor(rend, c.r, c.g, c.b, c.a);
+                auto drawRect = SDL_FRect();
+                drawRect.x = angle * rayWidth;
+                drawRect.y = (world.height - dist) / 2;
+                drawRect.w = rayWidth;
+                drawRect.h = dist;
+                SDL_RenderDrawRectF(rend, &drawRect);
+                SDL_SetRenderDrawColor(rend, 0,0,0,255);
+            }
+        }
     }
 }

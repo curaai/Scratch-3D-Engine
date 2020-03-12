@@ -1,6 +1,7 @@
 #pragma once 
 
 #include <math.h>
+#include <cmath>
 #include <cstdint>
 
 typedef struct rgba
@@ -34,5 +35,9 @@ typedef struct Point
         float newx = cos(ori) * x - sin(ori) * y;
         float newy = sin(ori) * x - cos(ori) * y;
         return Point{newx, newy};
+    }
+    float eucDist(const Point& pt) const 
+    {
+        return std::sqrt(std::pow(pt.x - x, 2) + std::pow(pt.y - y, 2));
     }
 } Point;

@@ -8,7 +8,7 @@
 class World
 {
 public:
-    World(){};
+    World(int width=640, int height=640);
     ~World(){};
 
 public:
@@ -16,8 +16,8 @@ public:
     virtual std::vector<Wall*>& getElements(void);
 
 public:
-    const int width = 320;
-    const int height = 320;
+    const int width;
+    const int height;
 private:
     std::vector<Wall*> elements;
 };

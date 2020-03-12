@@ -18,4 +18,7 @@ private:
 
     // field of view, ±60° 시야각
     const float fov=60;
+    // fov / world : 한 빛이 engine에 그려지는 width 
+    const float rayWidth; 
+    const float maxRayDistance;
 };
