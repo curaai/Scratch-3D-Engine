@@ -40,4 +40,8 @@ typedef struct Point
     {
         return std::sqrt(std::pow(pt.x - x, 2) + std::pow(pt.y - y, 2));
     }
+    float manDist(const Point& pt) const 
+    {
+        return std::abs(pt.x - x) + std::abs(pt.y - y);
+    }
 } Point;
