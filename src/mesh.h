@@ -60,12 +60,7 @@ struct mat44
 
 struct mesh
 {
-    mesh(std::vector<vec3d> pts, std::vector<vecIdx> indices)
-    {
-        for(auto idx : indices) {
-            trig.push_back(triangle {pts[std::get<0>(idx)], pts[std::get<1>(idx)], pts[std::get<2>(idx)]});
-        }
-    }
+    mesh(std::vector<triangle> trig): trig(trig) {}
 
     std::vector<triangle> trig;
 };

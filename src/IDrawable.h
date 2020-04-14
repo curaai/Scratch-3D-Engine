@@ -11,7 +11,7 @@ inline void draw_triangle(SDL_Renderer* rend, triangle tri)
 
     SDL_RenderDrawLineF(rend, tri.pts[0].x, tri.pts[0].y, tri.pts[1].x, tri.pts[1].y);
     SDL_RenderDrawLineF(rend, tri.pts[1].x, tri.pts[1].y, tri.pts[2].x, tri.pts[2].y);
-    SDL_RenderDrawLineF(rend, tri.pts[2].x, tri.pts[0].y, tri.pts[0].x, tri.pts[0].y);
+    SDL_RenderDrawLineF(rend, tri.pts[2].x, tri.pts[2].y, tri.pts[0].x, tri.pts[0].y);
 
     SDL_SetRenderDrawColor(rend,0,0,0,255);
 }
@@ -30,13 +30,21 @@ public:
 
     void draw(SDL_Renderer* rend)
     {
-        mat44 worldMat = rotateMat * translateMat * projMat * scaleMat; 
+        mat44 worldMat = rotateMat * translateMat * projMat;
         for (auto tri : obj.trig) {
-            triangle worldTrig;
-            worldTrig.pts[0] = worldMat * tri.pts[0];
-            worldTrig.pts[1] = worldMat * tri.pts[1];
-            worldTrig.pts[2] = worldMat * tri.pts[2];
-            draw_triangle(rend, worldTrig);
+            tri.pts[0] = worldMat * tri.pts[0];
+            tri.pts[1] = worldMat * tri.pts[1];
+            tri.pts[2] = worldMat * tri.pts[2];
+
+            tri.pts[0].x += 1.0f; tri.pts[0].y += 1.0f; 
+            tri.pts[1].x += 1.0f; tri.pts[1].y += 1.0f; 
+            tri.pts[2].x += 1.0f; tri.pts[2].y += 1.0f; 
+
+            tri.pts[0] = scaleMat * tri.pts[0];
+            tri.pts[1] = scaleMat * tri.pts[1];
+            tri.pts[2] = scaleMat * tri.pts[2];
+
+            draw_triangle(rend, tri);
         }
     }
 
