@@ -1,80 +1,75 @@
-﻿// Doom-engine.cpp : 이 파일에는 'main' 함수가 포함됩니다. 거기서 프로그램 실행이 시작되고 종료됩니다.
-//
-
+#include "IDrawable.h"
 #include "window.h"
-#include "RelativeWindow.h"
-#include "world.h"
-#include "user.h"
-#include "wall.h"
-#include "bean.h"
-#include "Engine/RayCasting.h"
 
-#include <iostream>
-#include <SDL.h>
+#include <ctime>
 
-#define MAIN_MAP_W 1280
-#define MAIN_MAP_H 640
+constexpr uint w=640;
+constexpr uint h=480;
+
+
+using namespace std;
+
+void f() {
+  clock_t begin = clock();
+
+
+  clock_t end = clock();
+  double elapsed_secs = double(end - begin) / CLOCKS_PER_SEC;
+}
 
 int main(int argc, char* argv[])
 {
-	User* user = new User(160, 160, rgba {255, 255, 0, 255});
-	auto win2d = new RelativeWindow("2d", 640, 640, user);
-	auto win3d = new RelativeWindow("3d", 640, 640, user);
-	// win->relativeMode = false;
-	auto world = new World();
-	Wall* wall1 = new Wall(Point{0, 0}, Point{0, 600}, rgba{255, 0, 0, 255});
-	Wall* wall2 = new Wall(Point{0, 0}, Point{600, 0}, rgba{255, 255, 0, 255});
-	Wall* wall3 = new Wall(Point{600, 0}, Point{600, 600}, rgba{0, 255, 0, 255});
-	Wall* wall4 = new Wall(Point{0, 600}, Point{600, 600}, rgba{0, 0, 255, 255});
-	// Wall* wall2 = new Wall(Point{50, 50}, Point{400, 400}, rgba{0, 0, 255, 255});
+    // draw cube
+	std::vector<vec3d> pts = {
+		{0, 0, 0}, {1, 0, 0},
+		{0, 0, 1}, {1, 0, 1},
+		{0, 1, 0}, {1, 1, 0},
+		{0, 1, 1}, {1, 1, 1},
+	};
+    
+    std::vector<vecIdx> idxArr = {
+        {0, 4, 5}, {0, 5, 1}, // south
+        {1, 5, 7}, {1, 7, 3}, // east
+        {3, 7, 6}, {3, 6, 2}, // north
+        {2, 6, 4}, {2, 4, 0}, // west
+        {4, 6, 7}, {4, 7, 5}, // top
+        {3, 2, 0}, {3, 0, 1}, // bottom
+    };
 
-	world->addElement(wall1);
-	world->addElement(wall2);
-	world->addElement(wall3);
-	world->addElement(wall4);
-	// world->addElement(wall2);
+	mesh cube {pts, idxArr};
+    Drawable drawObj { cube };
+    drawObj.setScale(0.5f * w, 0.5 * h, 1);
+    drawObj.setRotate(0, 0, 0);
+    drawObj.setTranslate(1.0f, 1.0f, 3.0f);
+    drawObj.setProjection((float)h/(float)w, 90.0f, 1000.0f, 0.1f);
+	
+    Window* win = new Window {"3D engine", w, h};
 
-	RayEngine* engine = new RayEngine(*user, *world);
+    float fTheta;
 
-	SDL_Keycode key;
+    clock_t begin = clock();
+    SDL_Keycode key;
 	SDL_Event event;
-	while (win2d->running()) {
+	while (win->running()) {
 		while(SDL_PollEvent(&event))
 		{
 			switch(event.type) 
 			{
-			case SDL_KEYDOWN:
-				key = event.key.keysym.sym;
-				switch(key) {
-					case SDLK_LEFT:
-					case SDLK_RIGHT:
-						user->turn(key);
-						break; 
-					case SDLK_w:
-					case SDLK_a:
-					case SDLK_d:
-					case SDLK_s:
-						user->move(key);
-						break;
-				}
-				break;
-
 			case SDL_QUIT:
+                win->isRunning = false;
 				break;
 			}
 		}
 
-		win2d->update();
-		win2d->render(world->getElements());
-		engine->draw2d(win2d->_renderer);
-		SDL_RenderPresent(win2d->_renderer);
+        clock_t curTime = clock();
+        fTheta = 1.0f * double(curTime - begin) / CLOCKS_PER_SEC ;
+        drawObj.setRotate(fTheta, 0, fTheta);
 
-		SDL_RenderClear(win3d->_renderer);
-		engine->draw3d(win3d->_renderer);
-		SDL_RenderPresent(win3d->_renderer);
+		win->update();
+		win->render(drawObj);
+		SDL_RenderPresent(win->_renderer);
 	}
-	delete win2d;
-	delete win3d;
+	delete win;
 
 	return 0;
 }

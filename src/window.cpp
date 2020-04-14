@@ -1,5 +1,4 @@
 #include "window.h"
-#include "utils.h"
 
 #include <iostream>
 
@@ -28,12 +27,11 @@ Window::~Window()
     SDL_DestroyRenderer(_renderer);
 }
 
-void Window::render(vector<Wall*>& renderObjects)
+void Window::render(Drawable& drawObj)
 {
     SDL_RenderClear(_renderer);
 
-    for (Wall* rendObj : renderObjects)
-        rendObj->draw(_renderer);
+    drawObj.draw(_renderer);
 
     SDL_RenderPresent(_renderer);
 }

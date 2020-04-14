@@ -1,55 +1,105 @@
 #pragma once 
 
-#include <tuple>
-#include <vector>
+#include "mesh.h"
+#include <SDL.h>
 
-struct vec3d
-{
-    float x, y, z;
-};
+#include <math.h>
 
-struct mat44 
+inline void draw_triangle(SDL_Renderer* rend, triangle tri)
 {
-    float m[4][4] = {0};
-    mat44 operator* (const mat44& mat)
+    SDL_SetRenderDrawColor(rend, 255, 255, 255, 255);
+
+    SDL_RenderDrawLineF(rend, tri.pts[0].x, tri.pts[0].y, tri.pts[1].x, tri.pts[1].y);
+    SDL_RenderDrawLineF(rend, tri.pts[1].x, tri.pts[1].y, tri.pts[2].x, tri.pts[2].y);
+    SDL_RenderDrawLineF(rend, tri.pts[2].x, tri.pts[0].y, tri.pts[0].x, tri.pts[0].y);
+
+    SDL_SetRenderDrawColor(rend,0,0,0,255);
+}
+
+class Drawable
+{
+public:
+    Drawable(mesh _mesh)
+        : obj(_mesh)
     {
-        mat44 res;
-        for(int i=0; i<4; i++) {
-            for(int j=0; j<4; j++) {
-                for(int k=0; k<4; k++) {
-                    res.m[i][j] += m[i][k] * mat.m[k][j];
-                }
-            }
-        }
-        return res;
+        translateMat = mat44::identical();
+        scaleMat = mat44::identical();
+        projMat = mat44::identical();
     }
-    vec3d operator* (const vec3d& vec)
-    {
-        vec3d res;
-        res.x = vec.x * m[0][0] + vec.y * m[1][0] + vec.z * m[2][0] + m[3][0];
-        res.y = vec.x * m[0][1] + vec.y * m[1][1] + vec.z * m[2][1] + m[3][1];
-        res.z = vec.x * m[0][2] + vec.y * m[1][2] + vec.z * m[2][2] + m[3][2];
-        float w = vec.x * m[0][3] + vec.y * m[1][3] + vec.z * m[2][3] + m[3][3];
-        if(w != 0.0f)
-            res.x /= w; res.y /= w; res.z /= z;
-        return res;
-    }
-};
+    ~Drawable(){}
 
-struct triangle
-{
-    vec3d trig[3];
-};
-
-using vecIdx = std::tuple<int, int, int>;
-struct mesh
-{
-    mesh(std::vector<vec3d> pts, std::vector<vecIdx> indices)
+    void draw(SDL_Renderer* rend)
     {
-        for(auto idx : indices) {
-            trig.push_back(triangle {pts[std::get<0>(idx)], pts[std::get<1>(idx)], pts[std::get<2>(idx)]});
+        mat44 worldMat = rotateMat * translateMat * projMat * scaleMat; 
+        for (auto tri : obj.trig) {
+            triangle worldTrig;
+            worldTrig.pts[0] = worldMat * tri.pts[0];
+            worldTrig.pts[1] = worldMat * tri.pts[1];
+            worldTrig.pts[2] = worldMat * tri.pts[2];
+            draw_triangle(rend, worldTrig);
         }
     }
 
-    std::vector<triangle> trig;
+    void setTranslate(float x, float y, float z)
+    {
+        mat44 m = mat44::identical();
+        m.m[3][0] = x;
+        m.m[3][1] = y;
+        m.m[3][2] = z;
+        translateMat = m;
+    }
+    void setScale(float x, float y, float z)
+    {
+        mat44 m = mat44::identical();
+        m.m[0][0] = x;
+        m.m[1][1] = y;
+        m.m[2][2] = z;
+        scaleMat = m;
+    }
+    void setRotate(float tX, float tY, float tZ)
+    {
+        mat44 rX = mat44::identical();
+        mat44 rY = rX;
+        mat44 rZ = rX;
+
+        // var cos tX, sin tX
+        float vcosx = cos(tX); float vsinx = sin(tX);
+        rX.m[1][1] = vcosx;
+        rX.m[1][2] = -vsinx;
+        rX.m[2][1] = vsinx;
+        rX.m[2][2] = vcosx;
+
+        // var cos tY, sin tY
+        float vcosy = cos(tY); float vsiny = sin(tY);
+        rY.m[0][0] = vcosy;
+        rY.m[0][2] = vsiny;
+        rY.m[2][0] = -vsiny;
+        rY.m[2][2] = vcosy;
+
+        // var cos tZ, sin tZ
+        float vcosz = cos(tZ); float vsinz = sin(tZ);
+        rZ.m[0][0] = vcosz;
+        rZ.m[0][1] = -vsinz;
+        rZ.m[1][0] = vsinz;
+        rZ.m[1][1] = vcosz;
+
+        rotateMat = rZ * rY * rX;
+    }
+    void setProjection(float aspectRatio, float fov, float fFar, float fNear)
+    {
+        mat44 proj;
+        // convert degree to radian  
+        float fovRad = 1.0f / tanf((fov / 180.0f * M_PI) * 0.5f);
+
+        proj.m[0][0] = aspectRatio * fovRad;
+        proj.m[1][1] = fovRad;
+        proj.m[2][2] = fFar / (fFar - fNear);
+        proj.m[3][2] = (-fFar * fNear) / (fFar - fNear);
+		proj.m[2][3] = 1.0f;
+		proj.m[3][3] = 0.0f;
+        projMat = proj;
+    }
+
+    mesh obj;
+    mat44 translateMat, scaleMat, rotateMat, projMat; 
 };
