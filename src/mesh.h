@@ -1,11 +1,32 @@
 #pragma once 
 
+#include <math.h>
 #include <tuple>
 #include <vector>
+
 
 struct vec3d
 {
     float x, y, z;
+
+    vec3d operator+ (const vec3d v) const {
+        return vec3d{x + v.x, y + v.y, z + v.z};
+    }
+    vec3d operator- (const vec3d v) const {
+        return vec3d{x - v.x, y - v.y, z - v.z};
+    }
+    vec3d operator* (const vec3d v) const {
+        return vec3d{x * v.x, y * v.y, z * v.z};
+    }
+    vec3d operator/ (const vec3d v) const {
+        return vec3d{x / v.x, y / v.y, z / v.z};
+    }
+    vec3d operator* (const float a) const {
+        return vec3d{x * a, y * a, z * a};
+    }
+    vec3d operator/ (const float a) const {
+        return vec3d{x / a, y / a, z / a};
+    }
 };
 
 struct triangle
@@ -64,3 +85,15 @@ struct mesh
 
     std::vector<triangle> trig;
 };
+
+inline vec3d cross_product(const vec3d& v1, const vec3d& v2)
+{
+    vec3d norm {
+        v1.y * v2.z - v1.z * v2.y,
+        v1.z * v2.x - v1.x * v2.z,
+        v1.x * v2.y - v1.y * v2.x
+    };
+    float unit = sqrtf(norm.x * norm.x + norm.y * norm.y + norm.y * norm.y);
+    norm = norm / unit;
+    return norm;
+}

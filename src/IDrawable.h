@@ -36,6 +36,10 @@ public:
             tri.pts[1] = worldMat * tri.pts[1];
             tri.pts[2] = worldMat * tri.pts[2];
 
+            vec3d norm = cross_product(tri.pts[1] - tri.pts[0], tri.pts[2] - tri.pts[0]);
+            if(norm.z < 0)
+                continue;
+
             tri.pts[0].x += 1.0f; tri.pts[0].y += 1.0f; 
             tri.pts[1].x += 1.0f; tri.pts[1].y += 1.0f; 
             tri.pts[2].x += 1.0f; tri.pts[2].y += 1.0f; 
