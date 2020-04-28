@@ -14,7 +14,7 @@ public:
     Window(const string name, const int width, const int height);
     ~Window();
 
-    void render(Drawable& drawObj);
+    void render(std::vector<triangle> tris);
     void update(void); 
     bool running(void) { return isRunning; }
 

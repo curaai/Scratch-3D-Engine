@@ -1,5 +1,6 @@
 #include "IDrawable.h"
 #include "window.h"
+#include "camera.h"
 
 #include <ctime>
 
@@ -38,7 +39,7 @@ int main(int argc, char* argv[])
 
 		// TOP                                                       
 		{ 0.0f, 1.0f, 0.0f,    0.0f, 1.0f, 1.0f,    1.0f, 1.0f, 1.0f },
-		{ 0.0f, 1.0f, 0.0f,    1.0f, 1.0f, 1.0f,    1.0f, 1.0f, 0.0f },
+		{ 0.0f, 1.0f, 0.0f,    1.0f, 1.0f,-1.0f,    1.0f, 1.0f, 0.0f },
 
 		// BOTTOM                                                    
 		{ 1.0f, 0.0f, 1.0f,    0.0f, 0.0f, 1.0f,    0.0f, 0.0f, 0.0f },
@@ -48,16 +49,15 @@ int main(int argc, char* argv[])
 	mesh cube {triangles};
 
     Drawable drawObj { cube };
-    drawObj.setScale(0.5f * w, 0.5 * h, 1);
+    drawObj.setScale(0.1 * w, 0.1 * h, 1);
     drawObj.setRotate(0, 0, 0);
-    drawObj.setTranslate(0, 0, 3.0f);
-    drawObj.setProjection((float)h/(float)w, 90.0f, 1000.0f, 0.1f);
-	
+	drawObj.setTranslate(0, 0, -3.0f);
+	auto worldMat = drawObj.getWorldMat();
+
+	Camera cam {vec3d {-1, -1, 5}};
+
     Window* win = new Window {"3D engine", w, h};
 
-    float fTheta;
-
-    clock_t begin = clock();
     SDL_Keycode key;
 	SDL_Event event;
 	while (win->running()) {
@@ -71,12 +71,8 @@ int main(int argc, char* argv[])
 			}
 		}
 
-        clock_t curTime = clock();
-        fTheta = 2.0f * double(curTime - begin) / CLOCKS_PER_SEC ;
-        drawObj.setRotate(fTheta, 0, fTheta);
-
 		win->update();
-		win->render(drawObj);
+		win->render(drawObj.getConverted(worldMat));
 		SDL_RenderPresent(win->_renderer);
 	}
 	delete win;

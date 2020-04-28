@@ -27,6 +27,9 @@ struct vec3d
     vec3d operator/ (const float a) const {
         return vec3d{x / a, y / a, z / a};
     }
+    vec3d operator- (void) const {
+        return vec3d{-x, -y, -z};
+    }
 };
 
 struct triangle
@@ -38,6 +41,15 @@ using vecIdx = std::tuple<int, int, int>;
 
 struct mat44 
 {
+    mat44() {}
+    mat44(vec3d a, vec3d b, vec3d c, vec3d d)
+    {
+        m[0][0] = a.x; m[1][0] = a.y; m[2][0] = a.z;
+        m[0][1] = b.x; m[1][1] = b.y; m[2][1] = b.z;
+        m[0][2] = c.x; m[1][2] = c.y; m[2][2] = c.z;
+        m[0][3] = d.x; m[1][3] = d.y; m[2][3] = d.z;
+    }
+
     float m[4][4] = {
         0, 0, 0, 0,
         0, 0, 0, 0,
@@ -56,7 +68,7 @@ struct mat44
         }
         return res;
     }
-    vec3d operator* (const vec3d& vec)
+    vec3d operator* (const vec3d& vec) const
     {
         vec3d res;
         res.x = vec.x * m[0][0] + vec.y * m[1][0] + vec.z * m[2][0] + m[3][0];

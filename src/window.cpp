@@ -27,11 +27,12 @@ Window::~Window()
     SDL_DestroyRenderer(_renderer);
 }
 
-void Window::render(Drawable& drawObj)
+void Window::render(std::vector<triangle> tris)
 {
     SDL_RenderClear(_renderer);
 
-    drawObj.draw(_renderer);
+    for(const auto& tri : tris)
+        draw_triangle(_renderer, tri);
 
     SDL_RenderPresent(_renderer);
 }
