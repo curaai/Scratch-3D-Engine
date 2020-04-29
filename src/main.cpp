@@ -41,7 +41,7 @@ int main(int argc, char* argv[])
 
 		// TOP                                                       
 		{ 0.0f, 1.0f, 0.0f,    0.0f, 1.0f, 1.0f,    1.0f, 1.0f, 1.0f },
-		{ 0.0f, 1.0f, 0.0f,    1.0f, 1.0f,-1.0f,    1.0f, 1.0f, 0.0f },
+		{ 0.0f, 1.0f, 0.0f,    1.0f, 1.0f, 1.0f,    1.0f, 1.0f, 0.0f },
 
 		// BOTTOM                                                    
 		{ 1.0f, 0.0f, 1.0f,    0.0f, 0.0f, 1.0f,    0.0f, 0.0f, 0.0f },
@@ -53,9 +53,9 @@ int main(int argc, char* argv[])
     Drawable drawObj { cube };
     // drawObj.setScale(0.1 * w, 0.1 * h, 1);
     drawObj.setRotate(0, 0, 0);
-	drawObj.setTranslate(0, 0, -3.0f);
+	drawObj.setTranslate(0, 0, 10.0f);
 
-	Camera cam {vec3d {-1, -1, 5}};
+	Camera cam {vec3d {3, 3, 1}};
 
 	Engine engine;
 	engine.set_projection(w/h, 60, 0.1f, 1000.0f);
@@ -79,17 +79,6 @@ int main(int argc, char* argv[])
 		}
 
 		win->update();
-		
-		// for debug
-		/*
-		for(auto x : tris) {
-			cout << x.pts[0].x << x.pts[0].y << x.pts[0].z << endl;
-			cout << x.pts[1].x << x.pts[1].y << x.pts[1].z << endl;
-			cout << x.pts[2].x << x.pts[2].y << x.pts[2].z << endl;
-			cout << "===" << endl;
-		}
-		return 0;
-		*/
 
 		win->render(tris);
 		SDL_RenderPresent(win->_renderer);

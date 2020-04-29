@@ -10,27 +10,39 @@ struct vec3d
 {
     float x, y, z;
 
-    vec3d operator+ (const vec3d v) const {
+    inline vec3d operator+ (const vec3d v) const {
         return vec3d{x + v.x, y + v.y, z + v.z};
     }
-    vec3d operator- (const vec3d v) const {
+    inline vec3d operator- (const vec3d v) const {
         return vec3d{x - v.x, y - v.y, z - v.z};
     }
-    vec3d operator* (const vec3d v) const {
+    inline vec3d operator* (const vec3d v) const {
         return vec3d{x * v.x, y * v.y, z * v.z};
     }
-    vec3d operator/ (const vec3d v) const {
+    inline vec3d operator/ (const vec3d v) const {
         return vec3d{x / v.x, y / v.y, z / v.z};
     }
-    vec3d operator* (const float a) const {
+    inline vec3d operator* (const float a) const {
         return vec3d{x * a, y * a, z * a};
     }
-    vec3d operator/ (const float a) const {
+    inline vec3d operator/ (const float a) const {
         return vec3d{x / a, y / a, z / a};
     }
-    vec3d operator- (void) const {
+    inline vec3d operator- (void) const {
         return vec3d{-x, -y, -z};
     }
+    inline float length(void) const {
+        return sqrt(x*x + y*y + z*z);
+    }
+    inline vec3d normalize(void) const {
+        return *this / length();
+    }
+
+    friend std::ostream& operator<<(std::ostream& os, const vec3d& vec)
+    {
+        os << vec.x << ' ' << vec.y << ' ' << vec.z << std::endl;
+        return os;
+    } 
 };
 
 struct triangle
@@ -72,10 +84,10 @@ struct mat44
     vec3d operator* (const vec3d& vec) const
     {
         vec3d res;
-        res.x = vec.x * m[0][0] + vec.y * m[1][0] + vec.z * m[2][0] + m[3][0];
-        res.y = vec.x * m[0][1] + vec.y * m[1][1] + vec.z * m[2][1] + m[3][1];
-        res.z = vec.x * m[0][2] + vec.y * m[1][2] + vec.z * m[2][2] + m[3][2];
-        float w = vec.x * m[0][3] + vec.y * m[1][3] + vec.z * m[2][3] + m[3][3];
+        res.x = vec.x * m[0][0] + vec.y * m[0][1] + vec.z * m[0][2] + m[0][3];
+        res.y = vec.x * m[1][0] + vec.y * m[1][1] + vec.z * m[1][2] + m[1][3];
+        res.z = vec.x * m[2][0] + vec.y * m[2][1] + vec.z * m[2][2] + m[2][3];
+        float w = vec.x * m[3][0] + vec.y * m[3][1] + vec.z * m[3][2] + m[3][3];
         if(w != 0.0f)
             res.x /= w; res.y /= w; res.z /= w;
         return res;

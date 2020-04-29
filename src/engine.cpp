@@ -15,20 +15,7 @@ std::vector<triangle> Engine::draw(Drawable* _mesh, Camera* cam)
 {
     const mat44 view_mat = cam->view_matrix();
     const mat44 world_mat = _mesh->world_matrix();
-    mat44 transform = world_mat * view_mat * proj_mat;
-
-    // using namespace std;
-    // cout << "== View Matrix == " << endl;
-    // cout << view_mat << endl;
-
-    // cout << "== World Matrix == " << endl;
-    // cout << world_mat << endl;
-
-    // cout << "== Projection Matrix == " << endl;
-    // cout << proj_mat << endl;
-
-    // cout << "== Final Matrix == " << endl;
-    // cout << transform << endl;
+    mat44 transform = proj_mat * view_mat * world_mat;
 
     return _mesh->getConverted(transform);
 }
