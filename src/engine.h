@@ -1,9 +1,17 @@
-#include "mesh.h"
+#include "IDrawable.h"
+#include "camera.h"
 
 
 class Engine
 {
 public:
     Engine();
-    void draw(const mesh* m, const Camera* cam); 
+    ~Engine();
+
+    std::vector<triangle> draw(Drawable* m, Camera* cam); 
+
+    void set_projection(float aspect_ratio, float fov, float near, float far);
+
+private:
+    mat44 proj_mat;
 };

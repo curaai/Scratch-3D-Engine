@@ -20,7 +20,7 @@ inline void draw_triangle(SDL_Renderer* rend, triangle tri)
 class Drawable
 {
 public:
-    Drawable(mesh _mesh)
+    Drawable(const mesh& _mesh)
         : obj(_mesh)
     {
         rotateMat = mat44::identical();
@@ -28,6 +28,7 @@ public:
         scaleMat = mat44::identical();
     }
     ~Drawable(){}
+
     std::vector<triangle> getConverted(const mat44& mat){
         std::vector<triangle> cvtTris; 
         for(const auto& tri : obj.trig) {
@@ -40,7 +41,7 @@ public:
         return cvtTris;
     }
 
-    mat44 getWorldMat(void)
+    const mat44 world_matrix(void)
     {
         return rotateMat * scaleMat * translateMat;
     }
@@ -58,8 +59,7 @@ public:
         rotateMat = util::mat::getRotationMat(vec3d {x, y, z});
     }
 
-public:
-    mesh obj;
 private:
+    const mesh obj;
     mat44 translateMat, scaleMat, rotateMat;
 };

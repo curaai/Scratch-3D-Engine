@@ -3,6 +3,7 @@
 #include <math.h>
 #include <tuple>
 #include <vector>
+#include <iostream>
 
 
 struct vec3d
@@ -56,7 +57,7 @@ struct mat44
         0, 0, 0, 0,
         0, 0, 0, 0,
     };
-    mat44 operator* (const mat44& mat)
+    mat44 operator* (const mat44& mat) const
     {
         mat44 res;
         for(int i=0; i<4; i++) {
@@ -79,6 +80,15 @@ struct mat44
             res.x /= w; res.y /= w; res.z /= w;
         return res;
     }
+
+    friend std::ostream& operator<<(std::ostream& os, const mat44& mat)
+    {
+        os << mat.m[0][0] << ' ' << mat.m[0][1] << ' ' << mat.m[0][2] << ' ' << mat.m[0][3] << std::endl;
+        os << mat.m[1][0] << ' ' << mat.m[1][1] << ' ' << mat.m[1][2] << ' ' << mat.m[1][3] << std::endl;
+        os << mat.m[2][0] << ' ' << mat.m[2][1] << ' ' << mat.m[2][2] << ' ' << mat.m[2][3] << std::endl;
+        os << mat.m[3][0] << ' ' << mat.m[3][1] << ' ' << mat.m[3][2] << ' ' << mat.m[3][3] << std::endl;
+        return os;
+    } 
 
     static mat44 identical(void)
     {

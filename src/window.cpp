@@ -31,8 +31,15 @@ void Window::render(std::vector<triangle> tris)
 {
     SDL_RenderClear(_renderer);
 
-    for(const auto& tri : tris)
+    for(auto tri : tris) {
+        tri.pts[0].x = tri.pts[0].x * w/2 + w/2;
+        tri.pts[0].y = tri.pts[0].y * h/2 + h/2;
+        tri.pts[1].x = tri.pts[1].x * w/2 + w/2;
+        tri.pts[1].y = tri.pts[1].y * h/2 + h/2;
+        tri.pts[2].x = tri.pts[2].x * w/2 + w/2;
+        tri.pts[2].y = tri.pts[2].y * h/2 + h/2;
         draw_triangle(_renderer, tri);
+    }
 
     SDL_RenderPresent(_renderer);
 }
