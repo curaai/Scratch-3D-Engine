@@ -113,11 +113,28 @@ struct mat44
     }
 };
 
+using verIdx = std::tuple<uint, uint, uint>;
+
 struct mesh
 {
-    mesh(std::vector<triangle> trig): trig(trig) {}
+    mesh(std::vector<vec3d> vertexes, std::vector<verIdx> indices)
+         : vertexes(vertexes), indices(indices) 
+    {}
 
-    std::vector<triangle> trig;
+    const std::vector<vec3d> vertexes;
+    const std::vector<verIdx> indices;
+    std::vector<triangle> triangles(void) const
+    {
+        std::vector<triangle> tris;
+        for(const verIdx& idx : indices) {
+            tris.push_back(triangle{
+                vertexes[std::get<0>(idx)], 
+                vertexes[std::get<1>(idx)], 
+                vertexes[std::get<2>(idx)]
+            });
+        }
+        return tris;
+    }
 };
 
 inline vec3d cross_product(const vec3d& v1, const vec3d& v2)
