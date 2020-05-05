@@ -37,17 +37,18 @@ int main(int argc, char* argv[])
 		{4, 6, 2}, {0, 6, 4}, 
 	};
 
-	mesh cube {vertexes, indices};
+	mesh cube = mesh::load_from_obj("resource/ship.obj");
+	// mesh cube {vertexes, indices};
 
     Drawable drawObj { cube };
     // drawObj.setScale(0.1 * w, 0.1 * h, 1);
-    drawObj.setRotate(0, 0, 0);
-	drawObj.setTranslate(0, 0, 10.0f);
+    drawObj.setRotate(90,  0, 0);
+	drawObj.setTranslate(0, 0, 35.0f);
 
-	Camera cam {vec3d {3, 3, 1}};
+	Camera cam {vec3d {0, 0, 0}};
 
 	Engine engine;
-	engine.set_projection(w/h, 60, 0.1f, 1000.0f);
+	engine.set_projection(w/h, 60, 0.5f, 1000.0f);
 
     Window* win = new Window {"3D engine", w, h};
 

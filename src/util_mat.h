@@ -2,10 +2,14 @@
 
 namespace util {
 namespace mat { 
-    inline mat44 getRotationMat(const vec3d rot) {
+    inline mat44 getRotationMat(vec3d rot) {
         mat44 rX = mat44::identical();
-        mat44 rY = rX;
-        mat44 rZ = rX;
+        mat44 rY = mat44::identical();
+        mat44 rZ = mat44::identical();
+
+        rot.x = TO_RADIAN(rot.x);
+        rot.y = TO_RADIAN(rot.y);
+        rot.z = TO_RADIAN(rot.z);
 
         // var cos tX, sin tX
         float vcosx = cos(rot.x); float vsinx = sin(rot.x);

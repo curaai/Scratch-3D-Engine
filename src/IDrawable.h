@@ -43,7 +43,7 @@ public:
 
     const mat44 world_matrix(void)
     {
-        return rotateMat * scaleMat * translateMat;
+        return translateMat * scaleMat * rotateMat;
     }
 
     void setTranslate(float x, float y, float z)

@@ -1,4 +1,6 @@
-#include "mesh.h"
+#pragma once 
+
+#include "vec.h"
 
 namespace util {
 namespace vec {

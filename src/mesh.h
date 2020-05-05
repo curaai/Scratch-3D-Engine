@@ -3,51 +3,35 @@
 #include <math.h>
 #include <tuple>
 #include <vector>
+#include <fstream>
 #include <iostream>
+#include <strstream>
+#include <string>
 
-
-struct vec3d
-{
-    float x, y, z;
-
-    inline vec3d operator+ (const vec3d v) const {
-        return vec3d{x + v.x, y + v.y, z + v.z};
-    }
-    inline vec3d operator- (const vec3d v) const {
-        return vec3d{x - v.x, y - v.y, z - v.z};
-    }
-    inline vec3d operator* (const vec3d v) const {
-        return vec3d{x * v.x, y * v.y, z * v.z};
-    }
-    inline vec3d operator/ (const vec3d v) const {
-        return vec3d{x / v.x, y / v.y, z / v.z};
-    }
-    inline vec3d operator* (const float a) const {
-        return vec3d{x * a, y * a, z * a};
-    }
-    inline vec3d operator/ (const float a) const {
-        return vec3d{x / a, y / a, z / a};
-    }
-    inline vec3d operator- (void) const {
-        return vec3d{-x, -y, -z};
-    }
-    inline float length(void) const {
-        return sqrt(x*x + y*y + z*z);
-    }
-    inline vec3d normalize(void) const {
-        return *this / length();
-    }
-
-    friend std::ostream& operator<<(std::ostream& os, const vec3d& vec)
-    {
-        os << vec.x << ' ' << vec.y << ' ' << vec.z << std::endl;
-        return os;
-    } 
-};
+#include "vec.h"
+#include "util_vec.h"
 
 struct triangle
 {
     vec3d pts[3];
+    vec3d surface_normal(void) const
+    {
+        auto a = pts[1] - pts[0];
+        auto b = pts[2] - pts[0];
+        return vec3d {
+            a.y * b.z - a.z * b.y,
+            a.z * b.x - a.x * b.z,
+            a.x * b.y - a.y * b.x
+        };
+    }
+
+    bool is_ccw(void) const 
+    {
+        auto a = pts[1]-pts[0];
+        auto b = pts[2]-pts[0];
+        auto res = util::vec::cross(a, b);
+        return (res.x + res.y + res.z) > 0;
+    }
 };
 
 using vecIdx = std::tuple<int, int, int>;
@@ -117,9 +101,10 @@ using verIdx = std::tuple<uint, uint, uint>;
 
 struct mesh
 {
-    mesh(std::vector<vec3d> vertexes, std::vector<verIdx> indices)
+    mesh(const std::vector<vec3d>& vertexes, const std::vector<verIdx>& indices)
          : vertexes(vertexes), indices(indices) 
-    {}
+    {
+    }
 
     const std::vector<vec3d> vertexes;
     const std::vector<verIdx> indices;
@@ -134,6 +119,38 @@ struct mesh
             });
         }
         return tris;
+    }
+
+    static mesh load_from_obj(const char* path)
+    {
+        std::vector<vec3d> vertexes;
+        std::vector<verIdx> indices;
+
+        std::ifstream in (path);
+        while(in.good())
+        {
+            char line[128];
+            in.getline(line, 128);
+
+            std::strstream ss;
+            ss << line;
+
+            char _type;
+            // vertex
+            if(line[0] == 'v')
+            {
+                vec3d vertex;
+                ss >> _type >> vertex.x >> vertex.y >> vertex.z;
+                vertexes.push_back(vertex);
+            }
+            else if(line[0] == 'f')
+            {
+                int f[3];
+				ss >> _type >> f[0] >> f[1] >> f[2];
+				indices.push_back({f[0]-1,f[1]-1,f[2]-1});
+            }
+        }
+        return mesh{vertexes, indices};
     }
 };
 
