@@ -22,26 +22,8 @@ void f() {
 
 int main(int argc, char* argv[])
 {
-	std::vector<vec3d> vertexes = {
-		{0, 0, 0}, {0, 1, 0}, 
-		{1, 0, 0}, {1, 1, 0}, 
-		{0, 0, 1}, {0, 1, 1}, 
-		{1, 0, 1}, {1, 1, 1}, 
-	};
-	std::vector<verIdx> indices = {
-		{5, 6, 7}, {4, 6, 5}, 
-		{7, 2, 3}, {6, 2, 7}, 
-		{3, 0, 1}, {2, 0, 3}, 
-		{6, 0, 1}, {5, 0, 6}, 
-		{1, 7, 3}, {5, 7, 1}, 
-		{4, 6, 2}, {0, 6, 4}, 
-	};
-
 	mesh cube = mesh::load_from_obj("resource/ship.obj");
-	// mesh cube {vertexes, indices};
-
     Drawable drawObj { cube };
-    // drawObj.setScale(0.1 * w, 0.1 * h, 1);
     drawObj.setRotate(90,  0, 0);
 	drawObj.setTranslate(0, 0, 35.0f);
 
@@ -53,7 +35,6 @@ int main(int argc, char* argv[])
     Window* win = new Window {"3D engine", w, h};
 
 	auto tris = engine.draw(&drawObj, &cam);
-	// return 0;
 
     SDL_Keycode key;
 	SDL_Event event;

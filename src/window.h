@@ -26,4 +26,11 @@ public:
     std::string name;
     int w;
     int h; 
+private:
+    const int min_x=0;
+    const int min_y=0;
+    const float min_z=0.0f;
+    const float max_z=1.0f;
+
+    mat44 screen_mat;
 };
