@@ -4,6 +4,7 @@
 #include "util_mat.h"
 
 #include <SDL.h>
+
 #include <math.h>
 
 inline void draw_triangle(SDL_Renderer* rend, triangle tri)

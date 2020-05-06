@@ -24,8 +24,7 @@ int main(int argc, char* argv[])
 {
 	mesh cube = mesh::load_from_obj("resource/ship.obj");
     Drawable drawObj { cube };
-    drawObj.setRotate(90,  0, 0);
-	drawObj.setTranslate(0, 0, 35.0f);
+	drawObj.setTranslate(-10, 1, 35.0f);
 
 	Camera cam {vec3d {0, 0, 0}};
 
@@ -34,7 +33,7 @@ int main(int argc, char* argv[])
 
     Window* win = new Window {"3D engine", w, h};
 
-	auto tris = engine.draw(&drawObj, &cam);
+	float t=1;
 
     SDL_Keycode key;
 	SDL_Event event;
@@ -49,8 +48,12 @@ int main(int argc, char* argv[])
 			}
 		}
 
-		win->update();
+		drawObj.setRotate(t,  0, -t);
+		auto tris = engine.draw(&drawObj, &cam);
 
+		t+=0.1;
+
+		win->update();
 		win->render(tris);
 		SDL_RenderPresent(win->_renderer);
 	}
