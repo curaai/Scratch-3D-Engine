@@ -3,7 +3,7 @@
 #include "mesh.h"
 #include "util_mat.h"
 
-#include <SDL.h>
+#include <SDL2/SDL.h>
 
 #include <math.h>
 
@@ -11,9 +11,9 @@ inline void draw_triangle(SDL_Renderer* rend, triangle tri)
 {
     SDL_SetRenderDrawColor(rend, 255, 255, 255, 255);
 
-    SDL_RenderDrawLine(rend, (int)tri.pts[0].x, (int)tri.pts[0].y, (int)tri.pts[1].x, (int)tri.pts[1].y);
-    SDL_RenderDrawLine(rend, (int)tri.pts[1].x, (int)tri.pts[1].y, (int)tri.pts[2].x, (int)tri.pts[2].y);
-    SDL_RenderDrawLine(rend, (int)tri.pts[2].x, (int)tri.pts[2].y, (int)tri.pts[0].x, (int)tri.pts[0].y);
+    SDL_RenderDrawLineF(rend, tri.pts[0].x, tri.pts[0].y, tri.pts[1].x, tri.pts[1].y);
+    SDL_RenderDrawLineF(rend, tri.pts[1].x, tri.pts[1].y, tri.pts[2].x, tri.pts[2].y);
+    SDL_RenderDrawLineF(rend, tri.pts[2].x, tri.pts[2].y, tri.pts[0].x, tri.pts[0].y);
 
     SDL_SetRenderDrawColor(rend,0,0,0,255);
 }

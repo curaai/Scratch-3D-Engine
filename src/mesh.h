@@ -1,12 +1,9 @@
 #pragma once 
 
-#include <math.h>
 #include <tuple>
 #include <vector>
 #include <fstream>
-#include <iostream>
-#include <strstream>
-#include <string>
+#include <sstream>
 
 #include "vec.h"
 #include "util_vec.h"
@@ -132,7 +129,7 @@ struct mesh
             char line[128];
             in.getline(line, 128);
 
-            std::strstream ss;
+            std::stringstream ss;
             ss << line;
 
             char _type;
