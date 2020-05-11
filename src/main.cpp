@@ -33,7 +33,7 @@ int main(int argc, char* argv[])
 
     Window* win = new Window {"3D engine", w, h};
 
-	float t=1;
+	float t=82;
 
     SDL_Keycode key;
 	SDL_Event event;
@@ -43,18 +43,18 @@ int main(int argc, char* argv[])
 			switch(event.type) 
 			{
 			case SDL_QUIT:
-                win->isRunning = false;
+                win->is_running = false;
 				break;
 			}
 		}
 
-		drawObj.setRotate(t,  0, -t);
+		drawObj.setRotate(t, 0, -t);
 		auto tris = engine.draw(&drawObj, &cam);
 
-		t+=0.1;
+		t+=1;
 
+		win->render(drawObj, tris);
 		win->update();
-		win->render(tris);
 		SDL_RenderPresent(win->_renderer);
 	}
 	delete win;

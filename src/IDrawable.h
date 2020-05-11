@@ -3,8 +3,6 @@
 #include "mesh.h"
 #include "util_mat.h"
 
-#include <SDL2/SDL.h>
-
 #include <math.h>
 
 inline void draw_triangle(SDL_Renderer* rend, triangle tri)
@@ -21,8 +19,8 @@ inline void draw_triangle(SDL_Renderer* rend, triangle tri)
 class Drawable
 {
 public:
-    Drawable(const mesh& _mesh)
-        : obj(_mesh)
+    Drawable(const mesh& mesh_)
+        : mesh_(mesh_)
     {
         rotateMat = mat44::identical();
         translateMat = mat44::identical();
@@ -32,7 +30,7 @@ public:
 
     std::vector<triangle> getConverted(const mat44& mat){
         std::vector<triangle> cvtTris; 
-        for(auto tri : obj.triangles()) {
+        for(auto tri : mesh_.triangles()) {
             triangle newTri;
             newTri.pts[0] = mat * tri.pts[0];
             newTri.pts[1] = mat * tri.pts[1];
@@ -60,7 +58,8 @@ public:
         rotateMat = util::mat::getRotationMat(vec3d {x, y, z});
     }
 
+public:
+    const mesh mesh_;
 private:
-    const mesh obj;
     mat44 translateMat, scaleMat, rotateMat;
 };

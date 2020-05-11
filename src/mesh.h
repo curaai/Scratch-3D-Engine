@@ -4,6 +4,7 @@
 #include <vector>
 #include <fstream>
 #include <sstream>
+#include "SDL2/SDL.h"
 
 #include "vec.h"
 #include "util_vec.h"
@@ -30,8 +31,6 @@ struct triangle
         return (res.x + res.y + res.z) > 0;
     }
 };
-
-using vecIdx = std::tuple<int, int, int>;
 
 struct mat44 
 {
@@ -98,13 +97,17 @@ using verIdx = std::tuple<uint, uint, uint>;
 
 struct mesh
 {
-    mesh(const std::vector<vec3d>& vertexes, const std::vector<verIdx>& indices)
-         : vertexes(vertexes), indices(indices) 
-    {
-    }
-
     const std::vector<vec3d> vertexes;
     const std::vector<verIdx> indices;
+    const std::vector<SDL_Color> colors;
+
+    mesh(const std::vector<vec3d>& vertexes, const std::vector<verIdx>& indices, const std::vector<SDL_Color>& colors)
+         : vertexes(vertexes), indices(indices), colors(colors)
+    {
+        if(static_cast<int>(indices.size()) != static_cast<int>(colors.size()))
+            std::invalid_argument("Invalid mesh loaded");
+    }
+
     std::vector<triangle> triangles(void) const
     {
         std::vector<triangle> tris;
@@ -118,10 +121,13 @@ struct mesh
         return tris;
     }
 
+    inline const SDL_Color get_color(int tri_idx) const { return colors[tri_idx]; }
+
     static mesh load_from_obj(const char* path)
     {
         std::vector<vec3d> vertexes;
         std::vector<verIdx> indices;
+        std::vector<SDL_Color> colors;
 
         std::ifstream in (path);
         while(in.good())
@@ -143,11 +149,13 @@ struct mesh
             else if(line[0] == 'f')
             {
                 int f[3];
-				ss >> _type >> f[0] >> f[1] >> f[2];
+                ss >> _type >> f[0] >> f[1] >> f[2];
 				indices.push_back({f[0]-1,f[1]-1,f[2]-1});
+                // default color 
+                colors.push_back(SDL_Color {255, 0, 0, 255});
             }
         }
-        return mesh{vertexes, indices};
+        return mesh{vertexes, indices, colors};
     }
 };
 

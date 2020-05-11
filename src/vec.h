@@ -5,6 +5,7 @@
  
 #define TO_RADIAN(x) x * M_PI / 180
 
+
 struct vec3d
 {
     float x, y, z;
