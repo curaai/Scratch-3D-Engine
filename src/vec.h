@@ -9,6 +9,7 @@
 struct vec3d
 {
     float x, y, z;
+    vec3d(float x=0, float y=0, float z=0) : x(x), y(y), z(z) {}
 
     inline vec3d operator+ (const vec3d v) const {
         return vec3d{x + v.x, y + v.y, z + v.z};

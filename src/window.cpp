@@ -48,8 +48,7 @@ void Window::render(const Drawable& obj, std::vector<std::pair<triangle, bool>> 
         tri.pts[1] = _screen_mat * tri.pts[1];
         tri.pts[2] = _screen_mat * tri.pts[2];
         
-        // draw_triangle(_renderer, tri);
-        zbuffer.fill_triangle(tri, util::draw::triangle_indices(tri), obj.mesh_.colors[i]);
+        zbuffer.fill_triangle(tri, util::draw::triangle_indices(tri), SDL_Color{255, 0, 0, 255});
     }
 }
 

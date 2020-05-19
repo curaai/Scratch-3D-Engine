@@ -3,6 +3,7 @@
 #include <tuple>
 #include <vector>
 #include <fstream>
+#include <string>
 #include <sstream>
 #include "SDL2/SDL.h"
 
@@ -95,41 +96,69 @@ struct mat44
 
 using verIdx = std::tuple<uint, uint, uint>;
 
+namespace {
+std::vector<std::string> split(const std::string& str, const std::string& delim)
+{
+    std::vector<std::string> tokens;
+
+    size_t prev = 0, pos = 0;
+    do
+    {
+        pos = str.find(delim, prev);
+        if (pos == std::string::npos) pos = str.length();
+        std::string token = str.substr(prev, pos-prev);
+        if (!token.empty()) tokens.push_back(token);
+        prev = pos + delim.length();
+    }
+    while (pos < str.length() && prev < str.length());
+    return tokens;
+}   
+};
+
 struct mesh
 {
-    const std::vector<vec3d> vertexes;
-    const std::vector<verIdx> indices;
-    const std::vector<SDL_Color> colors;
+    const std::vector<vec3d> verts;
+    const std::vector<verIdx> ver_indices;
+    const std::vector<vec3d> texs;
+    const std::vector<verIdx> tex_indices;
+    const std::vector<vec3d> norms;
+    const std::vector<verIdx> norm_indices;
 
-    mesh(const std::vector<vec3d>& vertexes, const std::vector<verIdx>& indices, const std::vector<SDL_Color>& colors)
-         : vertexes(vertexes), indices(indices), colors(colors)
-    {
-        if(static_cast<int>(indices.size()) != static_cast<int>(colors.size()))
-            std::invalid_argument("Invalid mesh loaded");
-    }
+    mesh(const std::vector<vec3d> &verts, const std::vector<verIdx> &ver_indices,
+         const std::vector<vec3d> &texs,  const std::vector<verIdx> &tex_indices,
+         const std::vector<vec3d> &norms, const std::vector<verIdx> &norm_indices)
+        : verts(verts), ver_indices(ver_indices)
+        , texs(texs), tex_indices(tex_indices)
+        , norms(norms), norm_indices(norm_indices)
+    { }
 
     std::vector<triangle> triangles(void) const
     {
         std::vector<triangle> tris;
-        for(const verIdx& idx : indices) {
+        for(const verIdx& idx : ver_indices) {
             tris.push_back(triangle{
-                vertexes[std::get<0>(idx)], 
-                vertexes[std::get<1>(idx)], 
-                vertexes[std::get<2>(idx)]
+                verts[std::get<0>(idx)], 
+                verts[std::get<1>(idx)], 
+                verts[std::get<2>(idx)]
             });
         }
         return tris;
     }
 
-    inline const SDL_Color get_color(int tri_idx) const { return colors[tri_idx]; }
+    // inline const SDL_Color get_color(int tri_idx) const { return colors[tri_idx]; }
 
     static mesh load_from_obj(const char* path)
     {
-        std::vector<vec3d> vertexes;
-        std::vector<verIdx> indices;
-        std::vector<SDL_Color> colors;
 
         std::ifstream in (path);
+        std::vector<vec3d> verts;
+        std::vector<verIdx> ver_indices;
+        std::vector<vec3d> texs;
+        std::vector<verIdx> tex_indices;
+        std::vector<vec3d> norms;
+        std::vector<verIdx> norm_indices;
+
+        char _type;
         while(in.good())
         {
             char line[128];
@@ -138,35 +167,43 @@ struct mesh
             std::stringstream ss;
             ss << line;
 
-            char _type;
             // vertex
             if(line[0] == 'v')
             {
                 vec3d vertex;
                 ss >> _type >> vertex.x >> vertex.y >> vertex.z;
-                vertexes.push_back(vertex);
+                if(line[1] == 'n')
+                    norms.push_back(vertex);
+                else if(line[1] == 't')
+                    texs.push_back(vertex);
+                else if(line[1] == ' ')
+                    verts.push_back(vertex);
             }
+
             else if(line[0] == 'f')
             {
-                int f[3];
+                std::string f[3];
                 ss >> _type >> f[0] >> f[1] >> f[2];
-				indices.push_back({f[0]-1,f[1]-1,f[2]-1});
-                // default color 
-                colors.push_back(SDL_Color {255, 0, 0, 255});
+
+                verIdx ver_idx, tex_idx, norm_idx; 
+                verIdx* idx;
+
+                for(uint i=0; i<3; i++) {
+                    auto tokens = split(f[i], "/");
+                    if(i == 0)
+                        idx = &ver_idx;
+                    else if(i == 1)
+                        idx = &tex_idx;
+                    else if(i == 2)
+                        idx = &norm_idx;
+                    
+                    std::get<0>(*idx) = std::stoul(tokens[0]);
+                    std::get<1>(*idx) = std::stoul(tokens[1]);
+                    std::get<2>(*idx) = std::stoul(tokens[2]);
+                }
             }
         }
-        return mesh{vertexes, indices, colors};
+
+        return mesh{verts, ver_indices, texs, tex_indices, norms, norm_indices};
     }
 };
-
-inline vec3d cross_product(const vec3d& v1, const vec3d& v2)
-{
-    vec3d norm {
-        v1.y * v2.z - v1.z * v2.y,
-        v1.z * v2.x - v1.x * v2.z,
-        v1.x * v2.y - v1.y * v2.x
-    };
-    float unit = sqrtf(norm.x * norm.x + norm.y * norm.y + norm.y * norm.y);
-    norm = norm / unit;
-    return norm;
-}
