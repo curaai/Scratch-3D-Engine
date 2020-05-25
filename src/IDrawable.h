@@ -1,7 +1,9 @@
 #pragma once 
 
 #include "mesh.h"
+#include "resource.h"
 #include "util_mat.h"
+#include "util_std.h"
 
 #include <math.h>
 
@@ -19,8 +21,9 @@ inline void draw_triangle(SDL_Renderer* rend, triangle tri)
 class Drawable
 {
 public:
-    Drawable(const mesh& mesh_)
+    Drawable(const mesh& mesh_, const Resource& rsc)
         : mesh_(mesh_)
+        , rsc(rsc)
     {
         rotateMat = mat44::identical();
         translateMat = mat44::identical();
@@ -60,6 +63,7 @@ public:
 
 public:
     const mesh mesh_;
+    const Resource rsc;
 private:
     mat44 translateMat, scaleMat, rotateMat;
 };

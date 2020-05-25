@@ -22,9 +22,9 @@ void f() {
 
 int main(int argc, char* argv[])
 {
-	mesh cube = mesh::load_from_obj("resource/ship.obj");
-    Drawable drawObj { cube };
-	drawObj.setTranslate(-10, 1, 35.0f);
+	mesh cube = mesh::load_from_obj("resource/cube.obj");
+    Drawable drawObj { cube, Resource("resource/gradation.png")};
+	drawObj.setTranslate(0, 0, 8.0f);
 
 	Camera cam {vec3d {0, 0, 0}};
 

@@ -1,4 +1,4 @@
-#include "util_draw.h"
+#pragma once 
 #include <cmath>
 #include <algorithm>
 
@@ -37,36 +37,19 @@ public:
         }
 
     }
-    void fill_triangle(const triangle& t, const std::vector<line>& lines, SDL_Color c)
-    {
-        // interpolation
-        auto length_2d = [](const vec3d& v) -> float {
-            return sqrt(v.x*v.x + v.y*v.y);
-        };
-        auto get_weights = [&t, length_2d](const vec3d _pos, float* w) {
-            w[0] = 1 / length_2d(t.pts[0] - _pos);
-            w[1] = 1 / length_2d(t.pts[1] - _pos);
-            w[2] = 1 / length_2d(t.pts[2] - _pos);
-        };
-        auto zvalue = [&t](float* w) -> float {
-            return (std::abs(t.pts[0].z) * w[0] + std::abs(t.pts[1].z) * w[1] + std::abs(t.pts[2].z) * w[2])  / (w[0] + w[1] + w[2]);
-        };
 
-        for(const auto& l : lines) {
-            const uint y = l.a.y;
-            for(uint x=l.a.x; x <= l.b.x; x++) {
-                float w[3];
-                get_weights(vec3d {static_cast<float>(x), static_cast<float>(y), 0}, w);
 
-                float z = zvalue(w);
-                if(zbuf[y][x] > z) {
-                    zbuf[y][x] = z;
-                    cbuf[y][x] = c;
-                }
-            }
+    void put_pixel(vec3d pos, const SDL_Color& pixel) {
+        const int x = static_cast<int>(pos.x);
+        const int y = static_cast<int>(pos.y);
+        if(pos.x < 0 || w <= pos.x || pos.y < 0 || h <= pos.y)
+            return;
+        if(zbuf[y][x] > pos.z) {
+            zbuf[y][x] = pos.z;
+            cbuf[y][x] = pixel;
         }
-    }
 
+    }
     float depth_value(uint x, uint y) const { return zbuf[y][x]; }
     const SDL_Color& color_value(uint x, uint y) const { return cbuf[y][x]; }
 

@@ -5,7 +5,9 @@
 #include <fstream>
 #include <string>
 #include <sstream>
-#include "SDL2/SDL.h"
+// #include "SDL2/SDL.h"
+#include "SDL.h"
+#include "SDL_image.h"
 
 #include "vec.h"
 #include "util_vec.h"
@@ -144,6 +146,16 @@ struct mesh
         }
         return tris;
     }
+    triangle texture(int i) const 
+    {
+        auto t_indices = tex_indices[i];
+        triangle texels;
+
+        texels.pts[0] = texs[std::get<0>(t_indices)];
+        texels.pts[1] = texs[std::get<1>(t_indices)];
+        texels.pts[2] = texs[std::get<2>(t_indices)];
+        return texels;
+    };
 
     // inline const SDL_Color get_color(int tri_idx) const { return colors[tri_idx]; }
 
@@ -158,7 +170,7 @@ struct mesh
         std::vector<vec3d> norms;
         std::vector<verIdx> norm_indices;
 
-        char _type;
+        char _type[2];
         while(in.good())
         {
             char line[128];
@@ -189,7 +201,10 @@ struct mesh
                 verIdx* idx;
 
                 for(uint i=0; i<3; i++) {
-                    auto tokens = split(f[i], "/");
+                    std::vector<std::string> tokens;
+                    for (uint j = 0; j < 3; j++) {
+                        tokens.push_back(split(f[j], "/")[i]);
+                    }
                     if(i == 0)
                         idx = &ver_idx;
                     else if(i == 1)
@@ -197,10 +212,13 @@ struct mesh
                     else if(i == 2)
                         idx = &norm_idx;
                     
-                    std::get<0>(*idx) = std::stoul(tokens[0]);
-                    std::get<1>(*idx) = std::stoul(tokens[1]);
-                    std::get<2>(*idx) = std::stoul(tokens[2]);
+                    std::get<0>(*idx) = std::stoul(tokens[0])-1;
+                    std::get<1>(*idx) = std::stoul(tokens[1])-1;
+                    std::get<2>(*idx) = std::stoul(tokens[2])-1;
                 }
+                ver_indices.push_back(ver_idx);
+                tex_indices.push_back(tex_idx);
+                norm_indices.push_back(norm_idx);
             }
         }
 
