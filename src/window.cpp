@@ -3,7 +3,6 @@
 
 #include <iostream>
 
-
 Window::Window(const string name, const int width, const int height)
     : name(name)
     , w(width)
@@ -14,19 +13,15 @@ Window::Window(const string name, const int width, const int height)
     SDL_Init(SDL_INIT_EVERYTHING);
 
     _window = SDL_CreateWindow(
-        name.c_str(), 
-        SDL_WINDOWPOS_CENTERED, 
-        SDL_WINDOWPOS_CENTERED, 
-        w, 
-        h,
-        0
-    );
+        name.c_str(), SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, w, h, 0);
     _renderer = SDL_CreateRenderer(_window, -1, 0);
 
-    // initialize view port matrix 
-    mat44 reflection_mat = util::mat::getScaleMat(vec3d {1, -1, 1});
-    mat44 scale_mat = util::mat::getScaleMat(vec3d{w/2.f, h/2.f, max_z - min_z});
-    mat44 translate_mat = util::mat::getTranslationMat(vec3d{min_x + w/2.f, min_y + h/2.f, min_z});
+    // initialize view port matrix
+    mat44 reflection_mat = util::mat::getScaleMat(vec3d{ 1, -1, 1 });
+    mat44 scale_mat =
+        util::mat::getScaleMat(vec3d{ w / 2.f, h / 2.f, max_z - min_z });
+    mat44 translate_mat = util::mat::getTranslationMat(
+        vec3d{ min_x + w / 2.f, min_y + h / 2.f, min_z });
     _screen_mat = translate_mat * scale_mat * reflection_mat;
 }
 
@@ -36,18 +31,20 @@ Window::~Window()
     SDL_DestroyRenderer(_renderer);
 }
 
-void Window::render(const Drawable& obj, std::vector<std::pair<triangle, bool>> fragments)
+void Window::render(const Drawable& obj,
+                    std::vector<std::pair<triangle, bool>> fragments)
 {
-    for(int i=0; i<fragments.size(); i++) {
+    for (int i = 0; i < fragments.size(); i++) {
         auto fragment = fragments[i];
-        if(!fragment.second)
+        if (!fragment.second)
             continue;
 
         auto& tri = fragment.first;
         tri.pts[0] = _screen_mat * tri.pts[0];
         tri.pts[1] = _screen_mat * tri.pts[1];
         tri.pts[2] = _screen_mat * tri.pts[2];
-        util::draw::draw_triangle_texture(tri, obj.mesh_.texture(i), obj.rsc.rsc, &zbuffer);
+        util::draw::draw_triangle_texture(
+            tri, obj.mesh_.texture(i), obj.rsc.rsc, &zbuffer);
         // const auto indices = util::draw::triangle_indices(tri);
         // zbuffer.fill_triangle(tri, indices, SDL_Color{255, 0, 0, 255});
     }
@@ -57,20 +54,18 @@ void Window::update()
 {
     SDL_RenderClear(_renderer);
 
-    for(int i=0; i<h; i++) {
-        for(int j=0; j<w; j++) {
+    for (int i = 0; i < h; i++) {
+        for (int j = 0; j < w; j++) {
             const auto& c = zbuffer.color_value(j, i);
             SDL_SetRenderDrawColor(_renderer, c.r, c.g, c.b, c.a);
             SDL_RenderDrawPoint(_renderer, j, i);
-            SDL_SetRenderDrawColor(_renderer,0,0,0,255);
+            SDL_SetRenderDrawColor(_renderer, 0, 0, 0, 255);
         }
     }
 
     SDL_RenderPresent(_renderer);
     zbuffer.clear();
 }
-
-
 
 SDL_Color Window::pixel(uint x, uint y)
 {

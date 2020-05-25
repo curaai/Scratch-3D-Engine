@@ -1,9 +1,8 @@
-#pragma once 
+#pragma once
 
 #include "mesh.h"
 
-
-class Camera 
+class Camera
 {
 public:
     Camera();
@@ -18,6 +17,6 @@ public:
 private:
     vec3d pos;
     vec3d at;
-    vec3d up {0, 1, 0};
-    vec3d rotation {0, 0, 0};
+    vec3d up{ 0, 1, 0 };
+    vec3d rotation{ 0, 0, 0 };
 };

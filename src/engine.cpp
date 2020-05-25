@@ -3,18 +3,12 @@
 
 #include <iostream>
 
+Engine::Engine() {}
 
-Engine::Engine()
-{
+Engine::~Engine() {}
 
-}
-
-Engine::~Engine()
-{
-
-}
-
-std::vector<std::pair<triangle, bool>> Engine::draw(Drawable* _mesh, Camera* cam)
+std::vector<std::pair<triangle, bool>> Engine::draw(Drawable* _mesh,
+                                                    Camera* cam)
 {
     const mat44 view_mat = cam->view_matrix();
     const mat44 world_mat = _mesh->world_matrix();
@@ -26,12 +20,13 @@ std::vector<std::pair<triangle, bool>> Engine::draw(Drawable* _mesh, Camera* cam
     return culled;
 }
 
-std::vector<std::pair<triangle, bool>> Engine::culling(const std::vector<triangle>& triangles)
+std::vector<std::pair<triangle, bool>> Engine::culling(
+    const std::vector<triangle>& triangles)
 {
     std::vector<std::pair<triangle, bool>> culled;
 
-    vec3d universal_vec {0, 0, 1};
-    for(int i=0; i < triangles.size(); i++) {
+    vec3d universal_vec{ 0, 0, 1 };
+    for (int i = 0; i < triangles.size(); i++) {
         const auto& tri = triangles[i];
         auto norm = tri.surface_normal();
         auto angle = util::vec::dot(norm, universal_vec);
@@ -40,11 +35,14 @@ std::vector<std::pair<triangle, bool>> Engine::culling(const std::vector<triangl
     return culled;
 }
 
-void Engine::set_projection(float aspect_ratio, float fov, float near, float far)
+void Engine::set_projection(float aspect_ratio,
+                            float fov,
+                            float near,
+                            float far)
 {
     proj_mat = mat44::identical();
 
-    // convert degree to radian  
+    // convert degree to radian
     float fovRad = 1.0f / tanf((fov / 180.0f * M_PI) * 0.5f);
 
     proj_mat.m[0][0] = aspect_ratio * fovRad;
