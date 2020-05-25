@@ -151,6 +151,10 @@ struct vec3d : vec2d
         return *this;
     }
     inline vec3d operator-(void) const { return vec3d{ -x, -y, -z }; }
+    inline bool operator==(const vec3d& v) const
+    {
+        return v.x == x && v.y == y && v.z == z;
+    }
     inline float length(void) const { return sqrt(x * x + y * y + z * z); }
     inline vec3d normalize(void) const { return *this / length(); }
 

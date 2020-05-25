@@ -31,12 +31,19 @@ struct triangle
         auto res = util::vec::cross(a, b);
         return (res.x + res.y + res.z) > 0;
     }
+    bool operator==(const triangle& t)
+    {
+        bool flag = true;
+        for (int i = 0; i < 3; i++)
+            flag &= t.pts[i] == pts[i];
+        return flag;
+    }
 };
 
 struct mat44
 {
     mat44() {}
-    mat44(vec3d a, vec3d b, vec3d c, vec3d d)
+    mat44(const vec3d& a, const vec3d& b, const vec3d& c, const vec3d& d)
     {
         m[0][0] = a.x;
         m[1][0] = a.y;
@@ -159,6 +166,16 @@ struct mesh
         }
         return tris;
     }
+    triangle vertex(int i) const
+    {
+        auto v_indices = ver_indices[i];
+        triangle _vertex;
+
+        _vertex.pts[0] = verts[std::get<0>(v_indices)];
+        _vertex.pts[1] = verts[std::get<1>(v_indices)];
+        _vertex.pts[2] = verts[std::get<2>(v_indices)];
+        return _vertex;
+    }
     triangle texture(int i) const
     {
         auto t_indices = tex_indices[i];
@@ -169,9 +186,16 @@ struct mesh
         texels.pts[2] = texs[std::get<2>(t_indices)];
         return texels;
     };
+    triangle normal(int i) const
+    {
+        auto n_indices = norm_indices[i];
+        triangle norm;
 
-    // inline const SDL_Color get_color(int tri_idx) const { return
-    // colors[tri_idx]; }
+        norm.pts[0] = norms[std::get<0>(n_indices)];
+        norm.pts[1] = norms[std::get<1>(n_indices)];
+        norm.pts[2] = norms[std::get<2>(n_indices)];
+        return norm;
+    }
 
     static mesh load_from_obj(const char* path)
     {
