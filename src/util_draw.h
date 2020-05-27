@@ -239,8 +239,9 @@ inline void draw_triangle_texture(triangle pos_tri,
         // split
         const float split = (v1.pos.y - v0.pos.y) / (v2.pos.y - v0.pos.y);
 
-        const TexVertex v3(util::vec::interpolate(v0.pos, v2.pos, split),
-                           util::vec::interpolate(v0.texel, v2.texel, split));
+        const TexVertex v3(
+            util::vec::interpolate<vec3d>(v0.pos, v2.pos, split),
+            util::vec::interpolate<vec2d>(v0.texel, v2.texel, split));
         if (v1.pos.x < v3.pos.x) {
             draw_flat_bottom_triangle_texture(v0, v1, v3, texture, zbuf);
             draw_flat_top_triangle_texture(v1, v3, v2, texture, zbuf);

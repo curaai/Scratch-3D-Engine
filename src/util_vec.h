@@ -15,11 +15,8 @@ inline float dot(const vec3d a, const vec3d b)
 {
     return a.x * b.x + a.y * b.y + a.z * b.z;
 }
-inline vec3d interpolate(const vec3d& start, const vec3d& end, float alpha)
-{
-    return start + (end - start) * alpha;
-}
-inline vec2d interpolate(const vec2d& start, const vec2d& end, float alpha)
+template <typename T>
+inline T interpolate(const T& start, const T& end, float alpha)
 {
     return start + (end - start) * alpha;
 }

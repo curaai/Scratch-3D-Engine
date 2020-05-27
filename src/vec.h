@@ -12,29 +12,29 @@ struct vec2d
         : x(x)
         , y(y)
     {}
-    inline vec2d operator+(const vec2d v) const { return vec2d{ *this } += v; }
-    inline vec2d& operator+=(const vec2d v)
+    inline vec2d operator+(const vec2d& v) const { return vec2d{ *this } += v; }
+    inline vec2d& operator+=(const vec2d& v)
     {
         x += v.x;
         y += v.y;
         return *this;
     }
-    inline vec2d operator-(const vec2d v) const { return vec2d{ *this } -= v; }
-    inline vec2d& operator-=(const vec2d v)
+    inline vec2d operator-(const vec2d& v) const { return vec2d{ *this } -= v; }
+    inline vec2d& operator-=(const vec2d& v)
     {
         x -= v.x;
         y -= v.y;
         return *this;
     }
-    inline vec2d operator*(const vec2d v) const { return vec2d{ *this } *= v; }
-    inline vec2d& operator*=(const vec2d v)
+    inline vec2d operator*(const vec2d& v) const { return vec2d{ *this } *= v; }
+    inline vec2d& operator*=(const vec2d& v)
     {
         x *= v.x;
         y *= v.y;
         return *this;
     }
-    inline vec2d operator/(const vec2d v) const { return vec2d{ *this } /= v; }
-    inline vec2d& operator/=(const vec2d v)
+    inline vec2d operator/(const vec2d& v) const { return vec2d{ *this } /= v; }
+    inline vec2d& operator/=(const vec2d& v)
     {
         x /= v.x;
         y /= v.y;
@@ -86,32 +86,32 @@ struct vec3d : vec2d
         : vec2d(x, y)
         , z(z)
     {}
-    inline vec3d operator+(const vec3d v) const { return vec3d{ *this } += v; }
-    inline vec3d& operator+=(const vec3d v)
+    inline vec3d operator+(const vec3d& v) const { return vec3d{ *this } += v; }
+    inline vec3d& operator+=(const vec3d& v)
     {
         x += v.x;
         y += v.y;
         z += v.z;
         return *this;
     }
-    inline vec3d operator-(const vec3d v) const { return vec3d{ *this } -= v; }
-    inline vec3d& operator-=(const vec3d v)
+    inline vec3d operator-(const vec3d& v) const { return vec3d{ *this } -= v; }
+    inline vec3d& operator-=(const vec3d& v)
     {
         x -= v.x;
         y -= v.y;
         z -= v.z;
         return *this;
     }
-    inline vec3d operator*(const vec3d v) const { return vec3d{ *this } *= v; }
-    inline vec3d& operator*=(const vec3d v)
+    inline vec3d operator*(const vec3d& v) const { return vec3d{ *this } *= v; }
+    inline vec3d& operator*=(const vec3d& v)
     {
         x *= v.x;
         y *= v.y;
         z *= v.z;
         return *this;
     }
-    inline vec3d operator/(const vec3d v) const { return vec3d{ *this } /= v; }
-    inline vec3d& operator/=(const vec3d v)
+    inline vec3d operator/(const vec3d& v) const { return vec3d{ *this } /= v; }
+    inline vec3d& operator/=(const vec3d& v)
     {
         x /= v.x;
         y /= v.y;
