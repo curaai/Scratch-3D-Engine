@@ -8,6 +8,7 @@ public:
     vec3d pos;
     vec2d texel;
 
+    TexVertex() {}
     TexVertex(const vec3d& pos, const vec2d texel)
         : pos(pos)
         , texel(texel)

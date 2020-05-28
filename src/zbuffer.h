@@ -36,12 +36,12 @@ public:
 
     void put_pixel(vec3d pos, const SDL_Color& pixel)
     {
-        const int x = static_cast<int>(pos.x);
-        const int y = static_cast<int>(pos.y);
-        if (pos.x < 0 || w <= pos.x || pos.y < 0 || h <= pos.y)
+        const int x = static_cast<int>(pos[0]);
+        const int y = static_cast<int>(pos[1]);
+        if (pos[0] < 0 || w <= pos[0] || pos[1] < 0 || h <= pos[1])
             return;
-        if (zbuf[y][x] > pos.z) {
-            zbuf[y][x] = pos.z;
+        if (zbuf[y][x] > pos[2]) {
+            zbuf[y][x] = pos[2];
             cbuf[y][x] = pixel;
         }
     }

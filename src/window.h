@@ -15,8 +15,7 @@ public:
     Window(const string name, const int width, const int height);
     ~Window();
 
-    void render(const Drawable& obj,
-                std::vector<std::pair<triangle, bool>> fragments);
+    void render(const Drawable& obj, IndexedTri3dList fragments);
     void update(void);
     bool running(void) { return is_running; }
 

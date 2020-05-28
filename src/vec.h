@@ -5,162 +5,134 @@
 
 #define TO_RADIAN(x) x* M_PI / 180
 
-struct vec2d
+template<int N>
+struct vec
 {
-    float x, y;
-    vec2d(float x = 0, float y = 0)
-        : x(x)
-        , y(y)
-    {}
-    inline vec2d operator+(const vec2d& v) const { return vec2d{ *this } += v; }
-    inline vec2d& operator+=(const vec2d& v)
-    {
-        x += v.x;
-        y += v.y;
-        return *this;
-    }
-    inline vec2d operator-(const vec2d& v) const { return vec2d{ *this } -= v; }
-    inline vec2d& operator-=(const vec2d& v)
-    {
-        x -= v.x;
-        y -= v.y;
-        return *this;
-    }
-    inline vec2d operator*(const vec2d& v) const { return vec2d{ *this } *= v; }
-    inline vec2d& operator*=(const vec2d& v)
-    {
-        x *= v.x;
-        y *= v.y;
-        return *this;
-    }
-    inline vec2d operator/(const vec2d& v) const { return vec2d{ *this } /= v; }
-    inline vec2d& operator/=(const vec2d& v)
-    {
-        x /= v.x;
-        y /= v.y;
-        return *this;
-    }
-    inline vec2d& operator+=(const float v)
-    {
-        x += v;
-        y += v;
-        return *this;
-    }
-    inline vec2d operator+(const float a) const { return vec2d{ *this } += a; }
-    inline vec2d& operator-=(const float v)
-    {
-        x -= v;
-        y -= v;
-        return *this;
-    }
-    inline vec2d operator-(const float a) const { return vec2d{ *this } -= a; }
-    inline vec2d& operator*=(const float v)
-    {
-        x *= v;
-        y *= v;
-        return *this;
-    }
-    inline vec2d operator*(const float a) const { return vec2d{ *this } *= a; }
-    inline vec2d& operator/=(const float v)
-    {
-        x /= v;
-        y /= v;
-        return *this;
-    }
-    inline vec2d operator/(const float a) const { return vec2d{ *this } /= a; }
-    inline vec2d operator-(void) const { return vec2d{ -x, -y }; }
-    inline float length(void) const { return sqrt(x * x + y * y); }
-    inline vec2d normalize(void) const { return *this / length(); }
+    float coords[N] = { 0 };
 
-    friend std::ostream& operator<<(std::ostream& os, const vec2d& vec)
+    inline vec<N> operator+(const vec<N>& v) const
     {
-        os << vec.x << ' ' << vec.y << std::endl;
+        return vec<N>{ *this } += v;
+    }
+    inline vec<N> operator-(const vec<N>& v) const
+    {
+        return vec<N>{ *this } -= v;
+    }
+    inline vec<N> operator*(const vec<N>& v) const
+    {
+        return vec<N>{ *this } *= v;
+    }
+    inline vec<N> operator/(const vec<N>& v) const
+    {
+        return vec<N>{ *this } /= v;
+    }
+    inline vec<N> operator+(const float a) const
+    {
+        return vec<N>{ *this } += a;
+    }
+    inline vec<N> operator-(const float a) const
+    {
+        return vec<N>{ *this } -= a;
+    }
+    inline vec<N> operator*(const float a) const
+    {
+        return vec<N>{ *this } *= a;
+    }
+    inline vec<N> operator/(const float a) const
+    {
+        return vec<N>{ *this } /= a;
+    }
+    inline vec<N>& operator+=(const vec<N>& v)
+    {
+        for (unsigned char i = 0; i < N; i++)
+            coords[i] += v.coords[i];
+        return *this;
+    }
+    inline vec<N>& operator-=(const vec<N>& v)
+    {
+        for (unsigned char i = 0; i < N; i++)
+            coords[i] -= v.coords[i];
+        return *this;
+    }
+    inline vec<N>& operator*=(const vec<N>& v)
+    {
+        for (unsigned char i = 0; i < N; i++)
+            coords[i] *= v.coords[i];
+        return *this;
+    }
+    inline vec<N>& operator/=(const vec<N>& v)
+    {
+        for (unsigned char i = 0; i < N; i++)
+            coords[i] /= v.coords[i];
+        return *this;
+    }
+    inline vec<N>& operator+=(float a)
+    {
+        for (unsigned char i = 0; i < N; i++)
+            coords[i] += a;
+        return *this;
+    }
+    inline vec<N>& operator-=(float a)
+    {
+        for (unsigned char i = 0; i < N; i++)
+            coords[i] -= a;
+        return *this;
+    }
+    inline vec<N>& operator*=(float a)
+    {
+        for (unsigned char i = 0; i < N; i++)
+            coords[i] *= a;
+        return *this;
+    }
+    inline vec<N>& operator/=(float a)
+    {
+        for (unsigned char i = 0; i < N; i++)
+            coords[i] /= a;
+        return *this;
+    }
+    inline bool operator==(const vec<N>& v) const
+    {
+        bool flag = true;
+        for (int i = 0; i < N; i++)
+            flag &= v[i] == coords[i];
+        return flag;
+    }
+    inline float& operator[](int i) { return coords[i]; }
+    inline float operator[](int i) const { return coords[i]; }
+    inline vec<N> operator-(void) const
+    {
+        vec<N> v;
+        for (int i = 0; i < N; i++)
+            v[i] = -coords[i];
+
+        return v;
+    }
+    inline float length(void) const
+    {
+        float sum = 0;
+        for (unsigned char i = 0; i < N; i++) {
+            sum += coords[i] * coords[i];
+        }
+        return sqrt(sum);
+    }
+    inline vec<N> normalize(void) const { return *this / length(); }
+    friend std::ostream& operator<<(std::ostream& os, const vec<N>& vec)
+    {
+        for (unsigned char i = 0; i < N; i++) {
+            os << vec.coords[i] << ' ';
+        }
+        os << std::endl;
         return os;
+    }
+
+    explicit operator vec<2>(void) const
+    {
+        vec<2> v;
+        v[0] = coords[0];
+        v[1] = coords[1];
+        return v;
     }
 };
 
-struct vec3d : vec2d
-{
-    float z;
-    vec3d(float x = 0, float y = 0, float z = 0)
-        : vec2d(x, y)
-        , z(z)
-    {}
-    inline vec3d operator+(const vec3d& v) const { return vec3d{ *this } += v; }
-    inline vec3d& operator+=(const vec3d& v)
-    {
-        x += v.x;
-        y += v.y;
-        z += v.z;
-        return *this;
-    }
-    inline vec3d operator-(const vec3d& v) const { return vec3d{ *this } -= v; }
-    inline vec3d& operator-=(const vec3d& v)
-    {
-        x -= v.x;
-        y -= v.y;
-        z -= v.z;
-        return *this;
-    }
-    inline vec3d operator*(const vec3d& v) const { return vec3d{ *this } *= v; }
-    inline vec3d& operator*=(const vec3d& v)
-    {
-        x *= v.x;
-        y *= v.y;
-        z *= v.z;
-        return *this;
-    }
-    inline vec3d operator/(const vec3d& v) const { return vec3d{ *this } /= v; }
-    inline vec3d& operator/=(const vec3d& v)
-    {
-        x /= v.x;
-        y /= v.y;
-        z /= v.z;
-        return *this;
-    }
-    inline vec3d operator+(const float a) const { return vec3d{ *this } += a; }
-    inline vec3d& operator+=(const float a)
-    {
-        x += a;
-        y += a;
-        z += a;
-        return *this;
-    }
-    inline vec3d operator-(const float a) const { return vec3d{ *this } -= a; }
-    inline vec3d& operator-=(const float a)
-    {
-        x -= a;
-        y -= a;
-        z -= a;
-        return *this;
-    }
-    inline vec3d operator*(const float a) const { return vec3d{ *this } *= a; }
-    inline vec3d& operator*=(const float a)
-    {
-        x *= a;
-        y *= a;
-        z *= a;
-        return *this;
-    }
-    inline vec3d operator/(const float a) const { return vec3d{ *this } /= a; }
-    inline vec3d& operator/=(const float a)
-    {
-        x /= a;
-        y /= a;
-        z /= a;
-        return *this;
-    }
-    inline vec3d operator-(void) const { return vec3d{ -x, -y, -z }; }
-    inline bool operator==(const vec3d& v) const
-    {
-        return v.x == x && v.y == y && v.z == z;
-    }
-    inline float length(void) const { return sqrt(x * x + y * y + z * z); }
-    inline vec3d normalize(void) const { return *this / length(); }
-
-    friend std::ostream& operator<<(std::ostream& os, const vec3d& vec)
-    {
-        os << vec.x << ' ' << vec.y << ' ' << vec.z << std::endl;
-        return os;
-    }
-};
+using vec2d = vec<2>;
+using vec3d = vec<3>;

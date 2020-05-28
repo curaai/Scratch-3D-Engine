@@ -7,20 +7,6 @@
 
 #include <math.h>
 
-inline void draw_triangle(SDL_Renderer* rend, triangle tri)
-{
-    SDL_SetRenderDrawColor(rend, 255, 255, 255, 255);
-
-    SDL_RenderDrawLineF(
-        rend, tri.pts[0].x, tri.pts[0].y, tri.pts[1].x, tri.pts[1].y);
-    SDL_RenderDrawLineF(
-        rend, tri.pts[1].x, tri.pts[1].y, tri.pts[2].x, tri.pts[2].y);
-    SDL_RenderDrawLineF(
-        rend, tri.pts[2].x, tri.pts[2].y, tri.pts[0].x, tri.pts[0].y);
-
-    SDL_SetRenderDrawColor(rend, 0, 0, 0, 255);
-}
-
 class Drawable
 {
 public:
@@ -34,11 +20,11 @@ public:
     }
     ~Drawable() {}
 
-    std::vector<triangle> getConverted(const mat44& mat)
+    std::vector<Tri3d> getConverted(const mat44& mat)
     {
-        std::vector<triangle> cvtTris;
+        std::vector<Tri3d> cvtTris;
         for (auto tri : mesh_.triangles()) {
-            triangle newTri;
+            Tri3d newTri;
             newTri.pts[0] = mat * tri.pts[0];
             newTri.pts[1] = mat * tri.pts[1];
             newTri.pts[2] = mat * tri.pts[2];

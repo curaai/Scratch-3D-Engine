@@ -6,57 +6,37 @@
 #include <tuple>
 #include <vector>
 // #include "SDL2/SDL.h"
+
+#if defined(_WIN32) || defined(_WIN64) || defined(__WINDOWS__)
+#error Windows_OS
+#elif defined(__linux__)
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_image.h>
+#elif defined(__APPLE__) && defined(__MACH__)
+#include "SDL.h"
+#include "SDL_image.h"
+#endif
 
+#include "triangle.h"
 #include "util_vec.h"
-#include "vec.h"
-
-struct triangle
-{
-    vec3d pts[3];
-    vec3d surface_normal(void) const
-    {
-        auto a = pts[1] - pts[0];
-        auto b = pts[2] - pts[0];
-        return vec3d{ a.y * b.z - a.z * b.y,
-                      a.z * b.x - a.x * b.z,
-                      a.x * b.y - a.y * b.x };
-    }
-
-    bool is_ccw(void) const
-    {
-        auto a = pts[1] - pts[0];
-        auto b = pts[2] - pts[0];
-        auto res = util::vec::cross(a, b);
-        return (res.x + res.y + res.z) > 0;
-    }
-    bool operator==(const triangle& t)
-    {
-        bool flag = true;
-        for (int i = 0; i < 3; i++)
-            flag &= t.pts[i] == pts[i];
-        return flag;
-    }
-};
 
 struct mat44
 {
     mat44() {}
     mat44(const vec3d& a, const vec3d& b, const vec3d& c, const vec3d& d)
     {
-        m[0][0] = a.x;
-        m[1][0] = a.y;
-        m[2][0] = a.z;
-        m[0][1] = b.x;
-        m[1][1] = b.y;
-        m[2][1] = b.z;
-        m[0][2] = c.x;
-        m[1][2] = c.y;
-        m[2][2] = c.z;
-        m[0][3] = d.x;
-        m[1][3] = d.y;
-        m[2][3] = d.z;
+        m[0][0] = a[0];
+        m[1][0] = a[1];
+        m[2][0] = a[2];
+        m[0][1] = b[0];
+        m[1][1] = b[1];
+        m[2][1] = b[2];
+        m[0][2] = c[0];
+        m[1][2] = c[1];
+        m[2][2] = c[2];
+        m[0][3] = d[0];
+        m[1][3] = d[1];
+        m[2][3] = d[2];
     }
 
     float m[4][4] = {
@@ -77,14 +57,18 @@ struct mat44
     vec3d operator*(const vec3d& vec) const
     {
         vec3d res;
-        res.x = vec.x * m[0][0] + vec.y * m[0][1] + vec.z * m[0][2] + m[0][3];
-        res.y = vec.x * m[1][0] + vec.y * m[1][1] + vec.z * m[1][2] + m[1][3];
-        res.z = vec.x * m[2][0] + vec.y * m[2][1] + vec.z * m[2][2] + m[2][3];
-        float w = vec.x * m[3][0] + vec.y * m[3][1] + vec.z * m[3][2] + m[3][3];
+        res[0] =
+            vec[0] * m[0][0] + vec[1] * m[0][1] + vec[2] * m[0][2] + m[0][3];
+        res[1] =
+            vec[0] * m[1][0] + vec[1] * m[1][1] + vec[2] * m[1][2] + m[1][3];
+        res[2] =
+            vec[0] * m[2][0] + vec[1] * m[2][1] + vec[2] * m[2][2] + m[2][3];
+        float w =
+            vec[0] * m[3][0] + vec[1] * m[3][1] + vec[2] * m[3][2] + m[3][3];
         if (w != 0.0f)
-            res.x /= w;
-        res.y /= w;
-        res.z /= w;
+            res[0] /= w;
+        res[1] /= w;
+        res[2] /= w;
         return res;
     }
 
@@ -156,40 +140,40 @@ struct mesh
         , norm_indices(norm_indices)
     {}
 
-    std::vector<triangle> triangles(void) const
+    std::vector<Tri3d> triangles(void) const
     {
-        std::vector<triangle> tris;
+        std::vector<Tri3d> tris;
         for (const verIdx& idx : ver_indices) {
-            tris.push_back(triangle{ verts[std::get<0>(idx)],
-                                     verts[std::get<1>(idx)],
-                                     verts[std::get<2>(idx)] });
+            tris.push_back(Tri3d{ verts[std::get<0>(idx)],
+                                  verts[std::get<1>(idx)],
+                                  verts[std::get<2>(idx)] });
         }
         return tris;
     }
-    triangle vertex(int i) const
+    Tri3d vertex(int i) const
     {
         auto v_indices = ver_indices[i];
-        triangle _vertex;
+        Tri3d _vertex;
 
         _vertex.pts[0] = verts[std::get<0>(v_indices)];
         _vertex.pts[1] = verts[std::get<1>(v_indices)];
         _vertex.pts[2] = verts[std::get<2>(v_indices)];
         return _vertex;
     }
-    triangle texture(int i) const
+    Tri3d texture(int i) const
     {
         auto t_indices = tex_indices[i];
-        triangle texels;
+        Tri3d texels;
 
         texels.pts[0] = texs[std::get<0>(t_indices)];
         texels.pts[1] = texs[std::get<1>(t_indices)];
         texels.pts[2] = texs[std::get<2>(t_indices)];
         return texels;
     };
-    triangle normal(int i) const
+    Tri3d normal(int i) const
     {
         auto n_indices = norm_indices[i];
-        triangle norm;
+        Tri3d norm;
 
         norm.pts[0] = norms[std::get<0>(n_indices)];
         norm.pts[1] = norms[std::get<1>(n_indices)];
@@ -219,7 +203,7 @@ struct mesh
             // vertex
             if (line[0] == 'v') {
                 vec3d vertex;
-                ss >> _type >> vertex.x >> vertex.y >> vertex.z;
+                ss >> _type >> vertex[0] >> vertex[1] >> vertex[2];
                 if (line[1] == 'n')
                     norms.push_back(vertex);
                 else if (line[1] == 't')

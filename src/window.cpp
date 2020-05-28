@@ -31,8 +31,7 @@ Window::~Window()
     SDL_DestroyRenderer(_renderer);
 }
 
-void Window::render(const Drawable& obj,
-                    std::vector<std::pair<triangle, bool>> fragments)
+void Window::render(const Drawable& obj, IndexedTri3dList fragments)
 {
     for (int i = 0; i < fragments.size(); i++) {
         auto fragment = fragments[i];
@@ -43,8 +42,12 @@ void Window::render(const Drawable& obj,
         tri.pts[0] = _screen_mat * tri.pts[0];
         tri.pts[1] = _screen_mat * tri.pts[1];
         tri.pts[2] = _screen_mat * tri.pts[2];
-        util::draw::draw_triangle_texture(
-            tri, obj.mesh_.texture(i), obj.rsc.rsc, &zbuffer);
+
+        triangle<TexVertex> tv_tri;
+        for (int j = 0; j < 3; j++)
+            tv_tri[j] = TexVertex{ tri[j], (vec2d)obj.mesh_.texture(i)[j] };
+
+        util::draw::draw_triangle_texture(tv_tri, obj.rsc.rsc, &zbuffer);
         // const auto indices = util::draw::triangle_indices(tri);
         // zbuffer.fill_triangle(tri, indices, SDL_Color{255, 0, 0, 255});
     }

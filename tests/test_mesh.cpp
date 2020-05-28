@@ -69,20 +69,20 @@ TEST(Mesh, pick)
 
     auto vertex = cube.vertex(0);
     vec3d _vertex[3]{ { 1, -1, 1 }, { -1, -1, 1 }, { -1, -1, -1 } };
-    triangle t{ _vertex[0], _vertex[1], _vertex[2] };
+    Tri3d t{ _vertex[0], _vertex[1], _vertex[2] };
     EXPECT_EQ(true, t == vertex);
 
     auto texture = cube.texture(0);
     _vertex[0] = { 1, 0.333333, 0 };
     _vertex[1] = { 1, 0.666667, 0 };
     _vertex[2] = { 0.666667, 0.666667, 0 };
-    t = triangle{ _vertex[0], _vertex[1], _vertex[2] };
+    t = Tri3d{ _vertex[0], _vertex[1], _vertex[2] };
     EXPECT_EQ(true, t == texture);
 
     auto norm = cube.normal(0);
     _vertex[0] = { 0, -1, 0 };
     _vertex[1] = { 0, -1, 0 };
     _vertex[2] = { 0, -1, 0 };
-    t = triangle{ _vertex[0], _vertex[1], _vertex[2] };
+    t = Tri3d{ _vertex[0], _vertex[1], _vertex[2] };
     EXPECT_EQ(true, t == norm);
 }

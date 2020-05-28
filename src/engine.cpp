@@ -7,8 +7,7 @@ Engine::Engine() {}
 
 Engine::~Engine() {}
 
-std::vector<std::pair<triangle, bool>> Engine::draw(Drawable* _mesh,
-                                                    Camera* cam)
+IndexedTri3dList Engine::draw(Drawable* _mesh, Camera* cam)
 {
     const mat44 view_mat = cam->view_matrix();
     const mat44 world_mat = _mesh->world_matrix();
@@ -20,15 +19,14 @@ std::vector<std::pair<triangle, bool>> Engine::draw(Drawable* _mesh,
     return culled;
 }
 
-std::vector<std::pair<triangle, bool>> Engine::culling(
-    const std::vector<triangle>& triangles)
+IndexedTri3dList Engine::culling(const std::vector<Tri3d>& triangles)
 {
-    std::vector<std::pair<triangle, bool>> culled;
+    IndexedTri3dList culled;
 
     vec3d universal_vec{ 0, 0, 1 };
     for (int i = 0; i < triangles.size(); i++) {
         const auto& tri = triangles[i];
-        auto norm = tri.surface_normal();
+        auto norm = util::tri::surface_normal(tri);
         auto angle = util::vec::dot(norm, universal_vec);
         culled.push_back(std::make_pair(tri, !(angle <= 0)));
     }

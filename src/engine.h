@@ -7,9 +7,8 @@ public:
     Engine();
     ~Engine();
 
-    std::vector<std::pair<triangle, bool>> draw(Drawable* m, Camera* cam);
-    std::vector<std::pair<triangle, bool>> culling(
-        const std::vector<triangle>& triangles);
+    IndexedTri3dList draw(Drawable* m, Camera* cam);
+    IndexedTri3dList culling(const std::vector<Tri3d>& triangles);
 
     void set_projection(float aspect_ratio, float fov, float near, float far);
 
