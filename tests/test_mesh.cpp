@@ -1,10 +1,10 @@
-#include "../src/mesh.h"
+#include "../src/Mesh.h"
 #include "../src/resource.h"
 #include "gtest/gtest.h"
 
 TEST(Mesh, loadObject)
 {
-    auto cube = mesh::load_from_obj("resource/cube.obj");
+    auto cube = Mesh::loadFromObj("resource/cube.obj");
 
     std::vector<vec3d> vertexes = {
         { 1, -1, -1 }, { 1, -1, 1 }, { -1, -1, 1 }, { -1, -1, -1 },
@@ -49,23 +49,23 @@ TEST(Mesh, loadObject)
         { 5 - 1, 5 - 1, 5 - 1 }, { 6 - 1, 6 - 1, 6 - 1 },
     };
 
-    for (int i = 0; i < cube.verts.size(); i++)
-        EXPECT_EQ(cube.verts[i], vertexes[i]);
-    for (int i = 0; i < cube.ver_indices.size(); i++)
-        EXPECT_EQ(cube.ver_indices[i], vert_indices[i]);
-    for (int i = 0; i < cube.texs.size(); i++)
-        EXPECT_EQ(cube.texs[i], texture[i]);
-    for (int i = 0; i < cube.tex_indices.size(); i++)
-        EXPECT_EQ(cube.tex_indices[i], tex_indices[i]);
-    for (int i = 0; i < cube.norms.size(); i++)
-        EXPECT_EQ(cube.norms[i], norm[i]);
-    for (int i = 0; i < cube.norm_indices.size(); i++)
-        EXPECT_EQ(cube.norm_indices[i], norm_indices[i]);
+    for (int i = 0; i < cube.vb.vertexes.size(); i++)
+        EXPECT_EQ(cube.vb.vertexes[i], vertexes[i]);
+    for (int i = 0; i < cube.vb.indices.size(); i++)
+        EXPECT_EQ(cube.vb.indices[i], vert_indices[i]);
+    for (int i = 0; i < cube.tex_vb.vertexes.size(); i++)
+        EXPECT_EQ(cube.tex_vb.vertexes[i], texture[i]);
+    for (int i = 0; i < cube.tex_vb.indices.size(); i++)
+        EXPECT_EQ(cube.tex_vb.indices[i], tex_indices[i]);
+    for (int i = 0; i < cube.norm_vb.vertexes.size(); i++)
+        EXPECT_EQ(cube.norm_vb.vertexes[i], norm[i]);
+    for (int i = 0; i < cube.norm_vb.indices.size(); i++)
+        EXPECT_EQ(cube.norm_vb.indices[i], norm_indices[i]);
 }
 
 TEST(Mesh, pick)
 {
-    auto cube = mesh::load_from_obj("resource/cube.obj");
+    auto cube = Mesh::loadFromObj("resource/cube.obj");
 
     auto vertex = cube.vertex(0);
     vec3d _vertex[3]{ { 1, -1, 1 }, { -1, -1, 1 }, { -1, -1, -1 } };

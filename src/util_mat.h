@@ -1,12 +1,15 @@
-#include "mesh.h"
+#pragma once
+
+#include "mat.h"
+#define TO_RADIAN(x) x* M_PI / 180
 
 namespace util {
 namespace mat {
-inline mat44 getRotationMat(vec3d rot)
+inline Mat44 GetRotationMat(vec3d rot)
 {
-    mat44 rX = mat44::identical();
-    mat44 rY = mat44::identical();
-    mat44 rZ = mat44::identical();
+    Mat44 rX = Mat44::identical();
+    Mat44 rY = Mat44::identical();
+    Mat44 rZ = Mat44::identical();
 
     rot[0] = TO_RADIAN(rot[0]);
     rot[1] = TO_RADIAN(rot[1]);
@@ -38,18 +41,18 @@ inline mat44 getRotationMat(vec3d rot)
     return rZ * rY * rX;
 }
 
-inline mat44 getTranslationMat(const vec3d pos)
+inline Mat44 GetTranslationMat(const vec3d pos)
 {
-    auto m = mat44::identical();
+    auto m = Mat44::identical();
     m.m[0][3] = pos[0];
     m.m[1][3] = pos[1];
     m.m[2][3] = pos[2];
     return m;
 }
 
-inline mat44 getScaleMat(const vec3d scale)
+inline Mat44 GetScaleMat(const vec3d scale)
 {
-    mat44 m = mat44::identical();
+    Mat44 m = Mat44::identical();
     m.m[0][0] *= scale[0];
     m.m[1][1] *= scale[1];
     m.m[2][2] *= scale[2];

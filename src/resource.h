@@ -6,14 +6,20 @@
 
 struct Resource
 {
-    Resource(const std::string rsc_path)
+    Resource(const std::string& rsc_path)
         : rsc_path(rsc_path)
     {
         rsc = IMG_Load(rsc_path.c_str());
         auto res = SDL_GetError();
     }
 
-    SDL_Color pixel(const uint x, const uint y)
+    SDL_Color pixel(float x, float y) const
+    {
+        const uint _x = std::fmod(rsc->w * x, rsc->w - 1.0f);
+        const uint _y = std::fmod(rsc->h * y, rsc->h - 1.0f);
+        return pixel(_x, _y);
+    }
+    SDL_Color pixel(const uint x, const uint y) const
     {
         int bpp = rsc->format->BytesPerPixel;
         /* Here p is the address to the pixel we want to retrieve */

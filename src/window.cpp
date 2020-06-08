@@ -8,7 +8,7 @@ Window::Window(const string name, const int width, const int height)
     , w(width)
     , h(height)
     , is_running(true)
-    , zbuffer(w, h)
+    , _zbuffer(w, h)
 {
     SDL_Init(SDL_INIT_EVERYTHING);
 
@@ -17,10 +17,10 @@ Window::Window(const string name, const int width, const int height)
     _renderer = SDL_CreateRenderer(_window, -1, 0);
 
     // initialize view port matrix
-    mat44 reflection_mat = util::mat::getScaleMat(vec3d{ 1, -1, 1 });
-    mat44 scale_mat =
-        util::mat::getScaleMat(vec3d{ w / 2.f, h / 2.f, max_z - min_z });
-    mat44 translate_mat = util::mat::getTranslationMat(
+    Mat44 reflection_mat = util::mat::GetScaleMat(vec3d{ 1, -1, 1 });
+    Mat44 scale_mat =
+        util::mat::GetScaleMat(vec3d{ w / 2.f, h / 2.f, max_z - min_z });
+    Mat44 translate_mat = util::mat::GetTranslationMat(
         vec3d{ min_x + w / 2.f, min_y + h / 2.f, min_z });
     _screen_mat = translate_mat * scale_mat * reflection_mat;
 }
@@ -31,25 +31,17 @@ Window::~Window()
     SDL_DestroyRenderer(_renderer);
 }
 
-void Window::render(const Drawable& obj, IndexedTri3dList fragments)
+void Window::render(const Drawable& obj, std::vector<Fragment> fragments)
 {
     for (int i = 0; i < fragments.size(); i++) {
-        auto fragment = fragments[i];
-        if (!fragment.second)
+        const auto& fragment = fragments[i];
+        if (fragment.is_culled)
             continue;
 
-        auto& tri = fragment.first;
-        tri.pts[0] = _screen_mat * tri.pts[0];
-        tri.pts[1] = _screen_mat * tri.pts[1];
-        tri.pts[2] = _screen_mat * tri.pts[2];
-
-        triangle<TexVertex> tv_tri;
-        for (int j = 0; j < 3; j++)
-            tv_tri[j] = TexVertex{ tri[j], (vec2d)obj.mesh_.texture(i)[j] };
-
-        util::draw::draw_triangle_texture(tv_tri, obj.rsc.rsc, &zbuffer);
-        // const auto indices = util::draw::triangle_indices(tri);
-        // zbuffer.fill_triangle(tri, indices, SDL_Color{255, 0, 0, 255});
+        for (const auto& fraxel : fragment.fraxels) {
+            auto color = obj.resource.pixel(fraxel.texel[0], fraxel.texel[1]);
+            _zbuffer.putPixel(fraxel.pixel, color);
+        }
     }
 }
 
@@ -59,7 +51,7 @@ void Window::update()
 
     for (int i = 0; i < h; i++) {
         for (int j = 0; j < w; j++) {
-            const auto& c = zbuffer.color_value(j, i);
+            const auto& c = _zbuffer.colorValue(j, i);
             SDL_SetRenderDrawColor(_renderer, c.r, c.g, c.b, c.a);
             SDL_RenderDrawPoint(_renderer, j, i);
             SDL_SetRenderDrawColor(_renderer, 0, 0, 0, 255);
@@ -67,10 +59,10 @@ void Window::update()
     }
 
     SDL_RenderPresent(_renderer);
-    zbuffer.clear();
+    _zbuffer.clear();
 }
 
 SDL_Color Window::pixel(uint x, uint y)
 {
-    return zbuffer.color_value(x, y);
+    return _zbuffer.colorValue(x, y);
 }

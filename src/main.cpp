@@ -1,6 +1,6 @@
-#include "IDrawable.h"
+#include "Rasterizer.h"
+#include "VertexShader.h"
 #include "camera.h"
-#include "engine.h"
 #include "window.h"
 
 #include <ctime>
@@ -21,14 +21,12 @@ void f()
 
 int main(int argc, char* argv[])
 {
-    mesh cube = mesh::load_from_obj("resource/cube.obj");
-    Drawable drawObj{ cube, Resource("resource/gradation.png") };
-    drawObj.setTranslate(0, 0, 8.0f);
+    Drawable drawObj{ Mesh::loadFromObj("resource/cube.obj", true),
+                      Resource{ "resource/gradation.png" } };
+    drawObj.setTranslate(vec3d{ 0, 0, 90.0f });
+    drawObj.setScale(vec3d{ 10, 10, 10 });
 
-    Camera cam{ vec3d{ 0, 0, 0 } };
-
-    Engine engine;
-    engine.set_projection(w / h, 60, 0.5f, 1000.0f);
+    Camera cam{ vec3d{ 0, 0, 0 }, w / h, 60 };
 
     Window* win = new Window{ "3D engine", w, h };
 
@@ -45,12 +43,13 @@ int main(int argc, char* argv[])
             }
         }
 
-        drawObj.setRotate(t, 0, -t);
-        auto tris = engine.draw(&drawObj, &cam);
+        drawObj.setRotate(vec3d{ t, 0, -t });
+        auto vst_list = VertexShader::vertexing(&drawObj, &cam);
+        auto fragments = Rasterizer::rasterize(win, vst_list);
 
         t += 1;
 
-        win->render(drawObj, tris);
+        win->render(drawObj, fragments);
         win->update();
         SDL_RenderPresent(win->_renderer);
     }

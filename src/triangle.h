@@ -15,7 +15,8 @@ struct triangle
         return flag;
     }
     T& operator[](const int idx) { return pts[idx]; }
+    T operator[](const int idx) const { return pts[idx]; }
 };
 
 using Tri3d = triangle<vec3d>;
-using IndexedTri3dList = std::vector<std::pair<Tri3d, bool>>;
+using Tri2d = triangle<vec2d>;

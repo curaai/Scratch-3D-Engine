@@ -34,7 +34,7 @@ public:
         }
     }
 
-    void put_pixel(vec3d pos, const SDL_Color& pixel)
+    void putPixel(vec3d pos, const SDL_Color& pixel)
     {
         const int x = static_cast<int>(pos[0]);
         const int y = static_cast<int>(pos[1]);
@@ -45,8 +45,8 @@ public:
             cbuf[y][x] = pixel;
         }
     }
-    float depth_value(uint x, uint y) const { return zbuf[y][x]; }
-    const SDL_Color& color_value(uint x, uint y) const { return cbuf[y][x]; }
+    float depthValue(uint x, uint y) const { return zbuf[y][x]; }
+    const SDL_Color& colorValue(uint x, uint y) const { return cbuf[y][x]; }
 
 private:
     const int w;

@@ -3,8 +3,6 @@
 #include <iostream>
 #include <math.h>
 
-#define TO_RADIAN(x) x* M_PI / 180
-
 template<int N>
 struct vec
 {

@@ -1,9 +1,9 @@
 #pragma once
 
-#include "IDrawable.h"
+#include "Drawable.h"
+#include "Fragment.h"
 #include "zbuffer.h"
 
-#include <SDL.h>
 #include <cstdint>
 #include <string>
 
@@ -15,11 +15,11 @@ public:
     Window(const string name, const int width, const int height);
     ~Window();
 
-    void render(const Drawable& obj, IndexedTri3dList fragments);
+    void render(const Drawable& obj, std::vector<Fragment> fragments);
     void update(void);
     bool running(void) { return is_running; }
 
-    const mat44 screen_matrix(void) { return _screen_mat; }
+    const Mat44& screenMatrix(void) const { return _screen_mat; }
     SDL_Color pixel(uint x, uint y);
 
 public:
@@ -37,8 +37,8 @@ private:
     const int min_y = 0;
     const float min_z = 0.0f;
     const float max_z = 1.0f;
-    mat44 _screen_mat;
+    Mat44 _screen_mat;
 
     // drawing elements
-    ZBuffer zbuffer;
+    ZBuffer _zbuffer;
 };

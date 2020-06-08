@@ -4,28 +4,28 @@
 
 #include <iostream>
 
-Camera::Camera() {}
-
-Camera::Camera(vec3d pos)
-    : pos(pos)
-{}
+Camera::Camera(vec3d pos, float aspect_ratio, float fov)
+{
+    setCameraPos(pos);
+    setProjection(aspect_ratio, fov);
+}
 
 Camera::~Camera() {}
 
-const mat44 Camera::view_matrix(void)
+void Camera::setViewMatrix(void)
 {
-    mat44 angle_mat = util::mat::getRotationMat(rotation);
-    mat44 pos_mat = util::mat::getTranslationMat(pos);
+    Mat44 angle_mat = util::mat::GetRotationMat(rotation);
+    Mat44 pos_mat = util::mat::GetTranslationMat(pos);
 
     // let camera point forward of cur position
     vec3d direction = angle_mat * pos_mat * vec3d{ 0, 0, 1 };
 
     vec3d n = (pos - direction).normalize();
-    vec3d u = util::vec::cross(up, n);
+    vec3d u = util::vec::Cross(up, n);
     u = u / u.length();
-    vec3d v = util::vec::cross(n, u);
+    vec3d v = util::vec::Cross(n, u);
 
-    auto view_mat = mat44::identical();
+    auto view_mat = Mat44::identical();
     view_mat.m[0][0] = u[0];
     view_mat.m[0][1] = u[1];
     view_mat.m[0][2] = u[2];
@@ -35,9 +35,24 @@ const mat44 Camera::view_matrix(void)
     view_mat.m[2][0] = n[0];
     view_mat.m[2][1] = n[1];
     view_mat.m[2][2] = n[2];
-    view_mat.m[0][3] = util::vec::dot(-pos, u);
-    view_mat.m[1][3] = util::vec::dot(-pos, v);
-    view_mat.m[2][3] = util::vec::dot(-pos, n);
+    view_mat.m[0][3] = util::vec::Dot(-pos, u);
+    view_mat.m[1][3] = util::vec::Dot(-pos, v);
+    view_mat.m[2][3] = util::vec::Dot(-pos, n);
 
-    return view_mat;
+    this->view_mat = view_mat;
+}
+
+void Camera::setProjection(float aspect_ratio, float fov)
+{
+    proj_mat = Mat44::identical();
+
+    // convert degree to radian
+    float fovRad = 1.0f / tanf((fov / 180.0f * M_PI) * 0.5f);
+
+    proj_mat.m[0][0] = aspect_ratio * fovRad;
+    proj_mat.m[1][1] = fovRad;
+    proj_mat.m[2][2] = proj_far / (proj_far - proj_near);
+    proj_mat.m[2][3] = (proj_far * proj_near) / (proj_far - proj_near);
+    proj_mat.m[3][2] = -1.0f;
+    proj_mat.m[3][3] = 0.0f;
 }
