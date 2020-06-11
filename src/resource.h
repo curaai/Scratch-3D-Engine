@@ -47,6 +47,7 @@ struct Resource
         }
         SDL_Color rgb;
         SDL_GetRGB(_pixel, rsc->format, &rgb.r, &rgb.g, &rgb.b);
+        rgb.a = 255;
         return rgb;
     }
 

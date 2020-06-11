@@ -23,14 +23,11 @@ int main(int argc, char* argv[])
 {
     Drawable drawObj{ Mesh::loadFromObj("resource/cube.obj", true),
                       Resource{ "resource/gradation.png" } };
-    drawObj.setTranslate(vec3d{ 0, 0, 90.0f });
-    drawObj.setScale(vec3d{ 10, 10, 10 });
-
+    drawObj.setTranslate(vec3d{ 0, 0, 8.0f });
     Camera cam{ vec3d{ 0, 0, 0 }, w / h, 60 };
-
     Window* win = new Window{ "3D engine", w, h };
 
-    float t = 82;
+    float t = 0;
 
     SDL_Keycode key;
     SDL_Event event;

@@ -31,10 +31,9 @@ Window::~Window()
     SDL_DestroyRenderer(_renderer);
 }
 
-void Window::render(const Drawable& obj, std::vector<Fragment> fragments)
+void Window::render(const Drawable& obj, const std::vector<Fragment>& fragments)
 {
-    for (int i = 0; i < fragments.size(); i++) {
-        const auto& fragment = fragments[i];
+    for (const auto& fragment : fragments) {
         if (fragment.is_culled)
             continue;
 

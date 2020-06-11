@@ -4,6 +4,12 @@
 #include "util_vec.h"
 #include <vector>
 
+template<class T>
+constexpr const T& clamp(const T& v, const T& lo, const T& hi)
+{
+    return (v < lo) ? lo : (hi < v) ? hi : v;
+}
+
 #if defined(_WIN32) || defined(_WIN64) || defined(__WINDOWS__)
 #error Windows_OS
 #elif defined(__linux__)
@@ -215,14 +221,10 @@ private:
         /* here we know that v1.y <= v2.y <= v3.y */
         /* check for trivial case of bottom-flat triangle */
         if (t[1].pixel[1] == t[2].pixel[1]) {
-            if (t[1].pixel[0] < t[0].pixel[0])
-                std::swap(t[0], t[1]);
             bottom_flat_triangle(t);
         }
         /* check for trivial case of top-flat triangle */
         else if (t[0].pixel[1] == t[1].pixel[1]) {
-            if (t[1].pixel[0] < t[0].pixel[0])
-                std::swap(t[0], t[1]);
             top_flat_triangle(t);
         } else {
             /* general case - split the triangle in a topflat and bottom-flat
@@ -236,12 +238,20 @@ private:
                     t[0].wnormal, t[2].wnormal, split),
                 util::vec::Interpolate<vec3d>(t[0].pixel, t[2].pixel, split),
                 util::vec::Interpolate<vec2d>(t[0].texel, t[2].texel, split));
-            bottom_flat_triangle(triangle<TexVertex>{ t[0], t[1], tv });
-            top_flat_triangle(triangle<TexVertex>{ t[1], tv, t[2] });
+            if (t[0].pixel[0] < tv.pixel[0]) {
+                bottom_flat_triangle(triangle<TexVertex>{ t[0], t[1], tv });
+                top_flat_triangle(triangle<TexVertex>{ t[1], tv, t[2] });
+            } else {
+                bottom_flat_triangle(triangle<TexVertex>{ t[0], tv, t[1] });
+                top_flat_triangle(triangle<TexVertex>{ tv, t[1], t[2] });
+            }
         }
     }
-    void bottom_flat_triangle(const triangle<TexVertex>& t)
+    void bottom_flat_triangle(triangle<TexVertex> t)
     {
+        if (t[2].pixel[0] < t[1].pixel[0])
+            std::swap(t[2], t[1]);
+
         const float delta_y = t[2].pixel[1] - t[0].pixel[1];
         const auto d1 = (t[1] - t[0]) / delta_y;
         const auto d2 = (t[2] - t[0]) / delta_y;
@@ -249,8 +259,11 @@ private:
 
         flat_triangle(t, d1, d2, edge);
     }
-    void top_flat_triangle(const triangle<TexVertex>& t)
+    void top_flat_triangle(triangle<TexVertex> t)
     {
+        if (t[1].pixel[0] < t[0].pixel[0])
+            std::swap(t[0], t[1]);
+
         const float delta_y = t[2].pixel[1] - t[0].pixel[1];
         const auto d1 = (t[2] - t[0]) / delta_y;
         const auto d2 = (t[2] - t[1]) / delta_y;
@@ -269,18 +282,22 @@ private:
         const int y_end = static_cast<int>(t[2].pixel[1]);
 
         for (int y = y_start; y < y_end; y++, e1 += d1, e2 += d2) {
-            const int x_start = static_cast<int>(e1.pixel[0]);
-            const int x_end = static_cast<int>(e2.pixel[0]);
+            int x_start = static_cast<int>(std::ceil(e1.pixel[0] - 0.5));
+            int x_end = static_cast<int>(e2.pixel[0]);
+            if (x_end < x_start)
+                std::swap(x_start, x_end);
 
             TexVertex init_line = e1;
             const TexVertex delta_line =
                 (e2 - e1) / (e2.pixel[0] - e1.pixel[0]);
-            for (int x = x_start; x < x_end; x++, init_line += delta_line) {
+            for (int x = x_start; x <= x_end; x++, init_line += delta_line) {
+                vec2d texel{ clamp(init_line.texel[0], 0.0f, 1.0f),
+                             clamp(init_line.texel[1], 0.0f, 1.0f) };
 
                 fraxels.push_back(
                     Fraxel{ init_line.wpos,
-                            vec3d{ (float)x, (float)y, init_line.wpos[2] },
-                            init_line.texel });
+                            vec3d{ (float)x, (float)y, init_line.pixel[2] },
+                            texel });
             }
         }
     };

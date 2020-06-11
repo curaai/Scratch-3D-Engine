@@ -11,6 +11,7 @@ public:
                                            std::vector<VSTriangle>& vst_list)
     {
         std::vector<Fragment> res;
+
         auto screen_mat = win->screenMatrix();
         for (const auto& vst : vst_list) {
             RSOutput rso0{ vst[0] };
@@ -31,8 +32,10 @@ public:
 private:
     static bool culling(Tri3d clipped_tri)
     {
+        // change to ccw order for clip space
+        std::swap(clipped_tri[2], clipped_tri[0]);
         auto normal = util::tri::SurfaceNormal(clipped_tri);
         auto angle = util::vec::Dot(normal, vec3d{ 0, 0, 1 });
-        return angle <= 0;
+        return angle >= 0;
     }
 };

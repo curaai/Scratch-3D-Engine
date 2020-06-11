@@ -36,6 +36,7 @@ inline vec3d SurfaceNormal(const Tri3d& tri)
 {
     auto a = tri.pts[1] - tri.pts[0];
     auto b = tri.pts[2] - tri.pts[0];
+
     return vec3d{ a[1] * b[2] - a[2] * b[1],
                   a[2] * b[0] - a[0] * b[2],
                   a[0] * b[1] - a[1] * b[0] };

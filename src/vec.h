@@ -116,10 +116,8 @@ struct vec
     inline vec<N> normalize(void) const { return *this / length(); }
     friend std::ostream& operator<<(std::ostream& os, const vec<N>& vec)
     {
-        for (unsigned char i = 0; i < N; i++) {
+        for (unsigned char i = 0; i < N; i++)
             os << vec.coords[i] << ' ';
-        }
-        os << std::endl;
         return os;
     }
 

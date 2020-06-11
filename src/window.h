@@ -15,7 +15,7 @@ public:
     Window(const string name, const int width, const int height);
     ~Window();
 
-    void render(const Drawable& obj, std::vector<Fragment> fragments);
+    void render(const Drawable& obj, const std::vector<Fragment>& fragments);
     void update(void);
     bool running(void) { return is_running; }
 

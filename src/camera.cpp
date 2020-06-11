@@ -17,12 +17,12 @@ void Camera::setViewMatrix(void)
     Mat44 angle_mat = util::mat::GetRotationMat(rotation);
     Mat44 pos_mat = util::mat::GetTranslationMat(pos);
 
-    // let camera point forward of cur position
+    // // let camera point forward of cur position
     vec3d direction = angle_mat * pos_mat * vec3d{ 0, 0, 1 };
 
     vec3d n = (pos - direction).normalize();
     vec3d u = util::vec::Cross(up, n);
-    u = u / u.length();
+    u = u.normalize();
     vec3d v = util::vec::Cross(n, u);
 
     auto view_mat = Mat44::identical();
@@ -51,8 +51,8 @@ void Camera::setProjection(float aspect_ratio, float fov)
 
     proj_mat.m[0][0] = aspect_ratio * fovRad;
     proj_mat.m[1][1] = fovRad;
-    proj_mat.m[2][2] = proj_far / (proj_far - proj_near);
-    proj_mat.m[2][3] = (proj_far * proj_near) / (proj_far - proj_near);
+    proj_mat.m[2][2] = -proj_far / (proj_far - proj_near);
+    proj_mat.m[2][3] = -(proj_far * proj_near) / (proj_far - proj_near);
     proj_mat.m[3][2] = -1.0f;
     proj_mat.m[3][3] = 0.0f;
 }
