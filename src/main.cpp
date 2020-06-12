@@ -1,7 +1,7 @@
 #include "FragmentShader.h"
 #include "Rasterizer.h"
+#include "User.h"
 #include "VertexShader.h"
-#include "camera.h"
 #include "window.h"
 
 #include <ctime>
@@ -12,18 +12,11 @@ constexpr uint h = 480;
 
 using namespace std;
 
-void f()
-{
-    clock_t begin = clock();
-
-    clock_t end = clock();
-    double elapsed_secs = double(end - begin) / CLOCKS_PER_SEC;
-}
 
 int main(int argc, char* argv[])
 {
     Window* win = new Window{ "3D engine", w, h };
-    Camera cam{ vec3d{ 0, 0, 0 }, w / h, 60 };
+    User user{ vec3d{ 0, 0, 0 }, w / h, 60 };
 
     Drawable drawObj{ Mesh::loadFromObj("resource/cube.obj", true),
                       Resource{ "resource/gradation.png" } };
@@ -31,7 +24,7 @@ int main(int argc, char* argv[])
     Light light;
     light.setTranslate(vec3d{ 3, 3, -10 });
 
-    FragmentShader fs{ &light, &cam };
+    FragmentShader fs{ &light, &user };
 
     float t = 30;
 
@@ -43,11 +36,16 @@ int main(int argc, char* argv[])
                 case SDL_QUIT:
                     win->is_running = false;
                     break;
+                case SDL_KEYDOWN: {
+                    auto key = event.key.keysym.sym;
+                    user.keyEvent(key);
+                    break;
+                }
             }
         }
 
         drawObj.setRotate(vec3d{ t, 0, -t });
-        auto vst_list = VertexShader::vertexing(&drawObj, &cam);
+        auto vst_list = VertexShader::vertexing(&drawObj, &user);
         auto fragments = Rasterizer::rasterize(win, vst_list);
         fragments = fs.lighting(fragments, &drawObj.resource);
 

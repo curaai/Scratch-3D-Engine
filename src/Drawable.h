@@ -50,6 +50,6 @@ public:
     vec3d rotation;
     vec3d scale;
 
-private:
+protected:
     Mat44 translate_mat, scale_mat, rotate_mat;
 };

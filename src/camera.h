@@ -29,10 +29,10 @@ public:
     vec3d pos;
     vec3d rotation{ 0, 0, 0 };
 
-private:
+protected:
     void setViewMatrix(void);
 
-private:
+protected:
     vec3d at;
     vec3d up{ 0, 1, 0 };
     Mat44 view_mat;

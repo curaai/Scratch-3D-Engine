@@ -1,18 +1,28 @@
 #pragma once
 
+#if defined(_WIN32) || defined(_WIN64) || defined(__WINDOWS__)
+#error Windows_OS
+#elif defined(__linux__)
+#include <SDL2/SDL.h>
+#include <SDL2/SDL_image.h>
+#elif defined(__APPLE__) && defined(__MACH__)
 #include "SDL.h"
 #include "SDL_image.h"
+#endif
+
 #include <string>
 
 struct Resource
 {
     Resource(const std::string& rsc_path)
         : rsc_path(rsc_path)
+        , textured(true)
     {
         rsc = IMG_Load(rsc_path.c_str());
         auto res = SDL_GetError();
     }
     Resource(SDL_Color c)
+        : textured(false)
     {
         color.r = c.r;
         color.g = c.g;
@@ -22,12 +32,20 @@ struct Resource
 
     SDL_Color pixel(float x, float y) const
     {
-        const uint _x = std::fmod(rsc->w * x, rsc->w - 1.0f);
-        const uint _y = std::fmod(rsc->h * y, rsc->h - 1.0f);
-        return pixel(_x, _y);
+        if (textured) {
+            const uint _x = std::fmod(rsc->w * x, rsc->w - 1.0f);
+            const uint _y = std::fmod(rsc->h * y, rsc->h - 1.0f);
+            return pixel(_x, _y);
+
+        } else {
+            return color;
+        }
     }
     SDL_Color pixel(const uint x, const uint y) const
     {
+        if (!textured)
+            return color;
+
         int bpp = rsc->format->BytesPerPixel;
         /* Here p is the address to the pixel we want to retrieve */
         uint8_t* p = (uint8_t*)rsc->pixels + y * rsc->pitch + x * bpp;
@@ -58,7 +76,10 @@ struct Resource
         return rgb;
     }
 
+    bool textured;
+    // texture elements
     const std::string rsc_path;
     SDL_Surface* rsc;
+    // not texture elements
     SDL_Color color;
 };
