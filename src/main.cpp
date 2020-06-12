@@ -1,3 +1,4 @@
+#include "FragmentShader.h"
 #include "Rasterizer.h"
 #include "VertexShader.h"
 #include "camera.h"
@@ -21,13 +22,18 @@ void f()
 
 int main(int argc, char* argv[])
 {
+    Window* win = new Window{ "3D engine", w, h };
+    Camera cam{ vec3d{ 0, 0, 0 }, w / h, 60 };
+
     Drawable drawObj{ Mesh::loadFromObj("resource/cube.obj", true),
                       Resource{ "resource/gradation.png" } };
-    drawObj.setTranslate(vec3d{ 0, 0, 8.0f });
-    Camera cam{ vec3d{ 0, 0, 0 }, w / h, 60 };
-    Window* win = new Window{ "3D engine", w, h };
+    drawObj.setTranslate(vec3d{ 0, 0, 5.0f });
+    Light light;
+    light.setTranslate(vec3d{ 3, 3, -10 });
 
-    float t = 0;
+    FragmentShader fs{ &light, &cam };
+
+    float t = 30;
 
     SDL_Keycode key;
     SDL_Event event;
@@ -43,10 +49,11 @@ int main(int argc, char* argv[])
         drawObj.setRotate(vec3d{ t, 0, -t });
         auto vst_list = VertexShader::vertexing(&drawObj, &cam);
         auto fragments = Rasterizer::rasterize(win, vst_list);
+        fragments = fs.lighting(fragments, &drawObj.resource);
 
         t += 1;
 
-        win->render(drawObj, fragments);
+        win->render(fragments);
         win->update();
         SDL_RenderPresent(win->_renderer);
     }

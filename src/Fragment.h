@@ -4,12 +4,6 @@
 #include "util_vec.h"
 #include <vector>
 
-template<class T>
-constexpr const T& clamp(const T& v, const T& lo, const T& hi)
-{
-    return (v < lo) ? lo : (hi < v) ? hi : v;
-}
-
 #if defined(_WIN32) || defined(_WIN64) || defined(__WINDOWS__)
 #error Windows_OS
 #elif defined(__linux__)
@@ -49,6 +43,7 @@ public:
         pixel += tv.pixel;
         texel += tv.texel;
         wpos += tv.wpos;
+        wnormal += tv.wnormal;
         return *this;
     }
     TexVertex operator-(const TexVertex& tv) const
@@ -60,6 +55,7 @@ public:
         pixel -= tv.pixel;
         texel -= tv.texel;
         wpos -= tv.wpos;
+        wnormal -= tv.wnormal;
         return *this;
     }
     TexVertex operator*(float v) const { return TexVertex(*this) *= v; }
@@ -68,6 +64,7 @@ public:
         pixel *= tv.pixel;
         texel *= tv.texel;
         wpos *= tv.wpos;
+        wnormal *= tv.wnormal;
         return *this;
     }
     TexVertex& operator*=(const float& tv)
@@ -75,6 +72,7 @@ public:
         pixel *= tv;
         texel *= tv;
         wpos *= tv;
+        wnormal *= tv;
         return *this;
     }
     TexVertex operator/(float v) const { return TexVertex(*this) /= v; }
@@ -83,6 +81,7 @@ public:
         pixel /= tv.pixel;
         texel /= tv.texel;
         wpos /= tv.wpos;
+        wnormal /= tv.wnormal;
         return *this;
     }
     TexVertex& operator/=(const float& tv)
@@ -90,6 +89,7 @@ public:
         pixel /= tv;
         texel /= tv;
         wpos /= tv;
+        wnormal /= tv;
         return *this;
     }
 };
@@ -107,20 +107,26 @@ struct RSOutput : public VSOutput
 struct Fraxel
 {
     vec3d wpos;
+    vec3d wnormal;
     vec3d pixel;
     vec2d texel;
     SDL_Color color;
 
-    Fraxel(const vec3d& wpos, const vec3d& pixel, const vec2d& texel)
-        : pixel(pixel)
+    Fraxel(const vec3d& wpos,
+           const vec3d& wnormal,
+           const vec3d& pixel,
+           const vec2d& texel)
+        : wpos(wpos)
+        , wnormal(wnormal)
+        , pixel(pixel)
         , texel(texel)
-        , wpos(wpos)
     {}
     Fraxel(const vec3d& wpos,
+           const vec3d& wnormal,
            const vec3d& pixel,
            const vec2d& texel,
            const SDL_Color c)
-        : Fraxel(wpos, pixel, texel)
+        : Fraxel(wpos, wnormal, pixel, texel)
     {
         color.r = c.r;
         color.g = c.g;
@@ -291,11 +297,12 @@ private:
             const TexVertex delta_line =
                 (e2 - e1) / (e2.pixel[0] - e1.pixel[0]);
             for (int x = x_start; x <= x_end; x++, init_line += delta_line) {
-                vec2d texel{ clamp(init_line.texel[0], 0.0f, 1.0f),
-                             clamp(init_line.texel[1], 0.0f, 1.0f) };
+                vec2d texel{ init_line.texel };
+                texel.clamp();
 
                 fraxels.push_back(
                     Fraxel{ init_line.wpos,
+                            init_line.wnormal,
                             vec3d{ (float)x, (float)y, init_line.pixel[2] },
                             texel });
             }

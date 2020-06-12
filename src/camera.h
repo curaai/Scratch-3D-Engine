@@ -24,15 +24,17 @@ public:
     }
     void setProjection(float aspect_ratio, float fov);
 
+public:
+    // Camera Components
+    vec3d pos;
+    vec3d rotation{ 0, 0, 0 };
+
 private:
     void setViewMatrix(void);
 
 private:
-    // Camera Components
-    vec3d pos;
     vec3d at;
     vec3d up{ 0, 1, 0 };
-    vec3d rotation{ 0, 0, 0 };
     Mat44 view_mat;
 
     // projection components

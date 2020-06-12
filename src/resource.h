@@ -12,6 +12,13 @@ struct Resource
         rsc = IMG_Load(rsc_path.c_str());
         auto res = SDL_GetError();
     }
+    Resource(SDL_Color c)
+    {
+        color.r = c.r;
+        color.g = c.g;
+        color.b = c.b;
+        color.a = c.a;
+    }
 
     SDL_Color pixel(float x, float y) const
     {
@@ -53,4 +60,5 @@ struct Resource
 
     const std::string rsc_path;
     SDL_Surface* rsc;
+    SDL_Color color;
 };

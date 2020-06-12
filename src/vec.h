@@ -120,6 +120,11 @@ struct vec
             os << vec.coords[i] << ' ';
         return os;
     }
+    void clamp(float _min = 0.0f, float _max = 1.0f)
+    {
+        for (unsigned char i = 0; i < N; i++)
+            coords[i] = std::min(_max, std::max(_min, coords[i]));
+    }
 
     explicit operator vec<2>(void) const
     {

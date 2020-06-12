@@ -9,6 +9,7 @@ public:
     static std::vector<VSTriangle> vertexing(const Drawable* obj,
                                              const Camera* cam)
     {
+        auto obj_rotate_mat = obj->getRotateMatrix();
         auto world_mat = obj->worldMatrix();
         auto view_mat = cam->viewMatrix();
         auto proj_mat = cam->projectionMatrix();
@@ -21,10 +22,13 @@ public:
                 transform * tri.pts[1].wpos,
                 transform * tri.pts[2].wpos,
             };
-            VSTriangle fvt{ tri.wposTriangle(),
-                            tri.wnormalTriangle(),
-                            tri.tposTriangle(),
-                            clipped_tri };
+            triangle<vec3d> norm_tri{ obj_rotate_mat * tri.pts[0].wnormal,
+                                      obj_rotate_mat * tri.pts[1].wnormal,
+                                      obj_rotate_mat * tri.pts[2].wnormal };
+
+            VSTriangle fvt{
+                tri.wposTriangle(), norm_tri, tri.tposTriangle(), clipped_tri
+            };
             res.push_back(fvt);
         }
         return res;

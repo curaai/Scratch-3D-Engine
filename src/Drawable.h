@@ -39,6 +39,9 @@ public:
         this->rotation = v;
         rotate_mat = util::mat::GetRotationMat(v);
     }
+    Mat44 getTranslateMatrix(void) const { return translate_mat; }
+    Mat44 getRotateMatrix(void) const { return rotate_mat; }
+    Mat44 getScaleMatrix(void) const { return scale_mat; }
 
 public:
     const Mesh mesh;

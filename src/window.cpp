@@ -31,16 +31,14 @@ Window::~Window()
     SDL_DestroyRenderer(_renderer);
 }
 
-void Window::render(const Drawable& obj, const std::vector<Fragment>& fragments)
+void Window::render(const std::vector<Fragment>& fragments)
 {
     for (const auto& fragment : fragments) {
         if (fragment.is_culled)
             continue;
 
-        for (const auto& fraxel : fragment.fraxels) {
-            auto color = obj.resource.pixel(fraxel.texel[0], fraxel.texel[1]);
-            _zbuffer.putPixel(fraxel.pixel, color);
-        }
+        for (const auto& fraxel : fragment.fraxels)
+            _zbuffer.putPixel(fraxel.pixel, fraxel.color);
     }
 }
 
