@@ -1,5 +1,5 @@
 #include "../src/Mesh.h"
-#include "../src/resource.h"
+#include "../src/Texture.h"
 #include "gtest/gtest.h"
 
 TEST(Mesh, loadObject)

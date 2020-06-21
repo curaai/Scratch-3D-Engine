@@ -12,14 +12,13 @@ constexpr uint h = 480;
 
 using namespace std;
 
-
 int main(int argc, char* argv[])
 {
     Window* win = new Window{ "3D engine", w, h };
     User user{ vec3d{ 0, 0, 0 }, w / h, 60 };
 
     Drawable drawObj{ Mesh::loadFromObj("resource/cube.obj", true),
-                      Resource{ "resource/gradation.png" } };
+                      Texture{ "resource/gradation.png" } };
     drawObj.setTranslate(vec3d{ 0, 0, 5.0f });
     Light light;
     light.setTranslate(vec3d{ 3, 3, -10 });
@@ -47,7 +46,7 @@ int main(int argc, char* argv[])
         drawObj.setRotate(vec3d{ t, 0, -t });
         auto vst_list = VertexShader::vertexing(&drawObj, &user);
         auto fragments = Rasterizer::rasterize(win, vst_list);
-        fragments = fs.lighting(fragments, &drawObj.resource);
+        fragments = fs.lighting(fragments, &drawObj.texture);
 
         t += 1;
 

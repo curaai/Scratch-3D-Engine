@@ -1,9 +1,9 @@
 #pragma once
 
 #include "Fragment.h"
+#include "Texture.h"
 #include "camera.h"
 #include "light.h"
-#include "resource.h"
 
 class FragmentShader
 {
@@ -14,7 +14,7 @@ public:
     {}
 
     std::vector<Fragment> lighting(const std::vector<Fragment>& fragments,
-                                   const Resource* rsc)
+                                   const Texture* rsc)
     {
         using namespace util::tri;
         using namespace util::vec;

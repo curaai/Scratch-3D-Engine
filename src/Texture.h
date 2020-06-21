@@ -12,43 +12,43 @@
 
 #include <string>
 
-struct Resource
+struct Texture
 {
-    Resource(const std::string& rsc_path)
-        : rsc_path(rsc_path)
-        , textured(true)
+    Texture(const std::string& color_path)
+        : color_path(color_path)
+        , isColored(false)
     {
-        rsc = IMG_Load(rsc_path.c_str());
+        color_map = IMG_Load(color_path.c_str());
         auto res = SDL_GetError();
     }
-    Resource(SDL_Color c)
-        : textured(false)
+    Texture(SDL_Color c)
+        : isColored(true)
     {
-        color.r = c.r;
-        color.g = c.g;
-        color.b = c.b;
-        color.a = c.a;
+        solid_color.r = c.r;
+        solid_color.g = c.g;
+        solid_color.b = c.b;
+        solid_color.a = c.a;
     }
 
     SDL_Color pixel(float x, float y) const
     {
-        if (textured) {
-            const uint _x = std::fmod(rsc->w * x, rsc->w - 1.0f);
-            const uint _y = std::fmod(rsc->h * y, rsc->h - 1.0f);
-            return pixel(_x, _y);
-
+        if (isColored) {
+            return solid_color;
         } else {
-            return color;
+            const uint _x = std::fmod(color_map->w * x, color_map->w - 1.0f);
+            const uint _y = std::fmod(color_map->h * y, color_map->h - 1.0f);
+            return pixel(_x, _y);
         }
     }
     SDL_Color pixel(const uint x, const uint y) const
     {
-        if (!textured)
-            return color;
+        if (!isColored)
+            return solid_color;
 
-        int bpp = rsc->format->BytesPerPixel;
+        int bpp = color_map->format->BytesPerPixel;
         /* Here p is the address to the pixel we want to retrieve */
-        uint8_t* p = (uint8_t*)rsc->pixels + y * rsc->pitch + x * bpp;
+        uint8_t* p =
+            (uint8_t*)color_map->pixels + y * color_map->pitch + x * bpp;
         uint32_t _pixel;
         switch (bpp) {
             case 1:
@@ -71,15 +71,24 @@ struct Resource
                 return SDL_Color();
         }
         SDL_Color rgb;
-        SDL_GetRGB(_pixel, rsc->format, &rgb.r, &rgb.g, &rgb.b);
+        SDL_GetRGB(_pixel, color_map->format, &rgb.r, &rgb.g, &rgb.b);
         rgb.a = 255;
         return rgb;
     }
 
-    bool textured;
+    bool isColored;
+    SDL_Color solid_color;
+
     // texture elements
-    const std::string rsc_path;
-    SDL_Surface* rsc;
-    // not texture elements
-    SDL_Color color;
+    std::string color_path;
+    SDL_Surface* color_map;
+    // height elements
+    std::string height_path;
+    SDL_Surface* height_map;
+    // normal elements
+    std::string normal_path;
+    SDL_Surface* normal_map;
+    // // ambient elements
+    // std::string ambient_path;
+    // SDL_Surface* ambient_map;
 };

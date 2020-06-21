@@ -1,7 +1,7 @@
 #pragma once
 
 #include "Mesh.h"
-#include "resource.h"
+#include "Texture.h"
 #include "util_mat.h"
 
 #include <math.h>
@@ -9,9 +9,9 @@
 class Drawable
 {
 public:
-    Drawable(const Mesh& mesh, const Resource& rsc)
+    Drawable(const Mesh& mesh, const Texture& rsc)
         : mesh(mesh)
-        , resource(rsc)
+        , texture(rsc)
     {
         rotate_mat = Mat44::identical();
         translate_mat = Mat44::identical();
@@ -45,7 +45,7 @@ public:
 
 public:
     const Mesh mesh;
-    const Resource resource;
+    const Texture texture;
     vec3d pos;
     vec3d rotation;
     vec3d scale;
