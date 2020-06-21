@@ -15,4 +15,4 @@ RUN apt-get update
 RUN git clone https://github.com/curaai00/Doom-engine.git /workspace
 WORKDIR /workspace
 RUN git checkout 3d_engine
-RUN git submodule add https://github.com/google/googletest extern/googletest
+RUN git submodule init && git submodule update
