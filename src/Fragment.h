@@ -1,6 +1,7 @@
 #pragma once
 
 #include "Vertex.h"
+#include "mat.h"
 #include "util_vec.h"
 #include <vector>
 
@@ -20,18 +21,21 @@ class TexVertex
 public:
     vec3d wpos;
     vec3d wnormal;
-    vec3d pixel;
-    vec2d texel;
+    vec3d pixel; // screen space coordinate
+    vec2d texel; // UV coordinate
+    vec3d tlight;
 
     TexVertex() {}
     TexVertex(const vec3d& wpos,
               const vec3d& wnormal,
               const vec3d& pixel,
-              const vec2d& texel)
+              const vec2d& texel,
+              const vec3d& tlight)
         : pixel(pixel)
         , texel(texel)
         , wpos(wpos)
         , wnormal(wnormal)
+        , tlight(tlight)
     {}
 
     TexVertex operator+(const TexVertex& tv) const
@@ -44,6 +48,7 @@ public:
         texel += tv.texel;
         wpos += tv.wpos;
         wnormal += tv.wnormal;
+        tlight += tv.tlight;
         return *this;
     }
     TexVertex operator-(const TexVertex& tv) const
@@ -56,6 +61,7 @@ public:
         texel -= tv.texel;
         wpos -= tv.wpos;
         wnormal -= tv.wnormal;
+        tlight -= tv.tlight;
         return *this;
     }
     TexVertex operator*(float v) const { return TexVertex(*this) *= v; }
@@ -65,6 +71,7 @@ public:
         texel *= tv.texel;
         wpos *= tv.wpos;
         wnormal *= tv.wnormal;
+        tlight *= tv.tlight;
         return *this;
     }
     TexVertex& operator*=(const float& tv)
@@ -73,6 +80,7 @@ public:
         texel *= tv;
         wpos *= tv;
         wnormal *= tv;
+        tlight *= tv;
         return *this;
     }
     TexVertex operator/(float v) const { return TexVertex(*this) /= v; }
@@ -82,6 +90,7 @@ public:
         texel /= tv.texel;
         wpos /= tv.wpos;
         wnormal /= tv.wnormal;
+        tlight /= tv.tlight;
         return *this;
     }
     TexVertex& operator/=(const float& tv)
@@ -90,6 +99,7 @@ public:
         texel /= tv;
         wpos /= tv;
         wnormal /= tv;
+        tlight /= tv;
         return *this;
     }
 };
@@ -110,23 +120,27 @@ struct Fraxel
     vec3d wnormal;
     vec3d pixel;
     vec2d texel;
+    vec3d tlight;
     SDL_Color color;
 
     Fraxel(const vec3d& wpos,
            const vec3d& wnormal,
            const vec3d& pixel,
-           const vec2d& texel)
+           const vec2d& texel,
+           const vec3d& tlight)
         : wpos(wpos)
         , wnormal(wnormal)
         , pixel(pixel)
         , texel(texel)
+        , tlight(tlight)
     {}
     Fraxel(const vec3d& wpos,
            const vec3d& wnormal,
            const vec3d& pixel,
            const vec2d& texel,
+           const vec3d& tlight,
            const SDL_Color c)
-        : Fraxel(wpos, wnormal, pixel, texel)
+        : Fraxel(wpos, wnormal, pixel, texel, tlight)
     {
         color.r = c.r;
         color.g = c.g;
@@ -139,13 +153,16 @@ class Fragment : public triangle<RSOutput>
 {
 public:
     std::vector<Fraxel> fraxels;
+    triangle<vec3d> tangent_light_tri;
     const bool is_culled;
 
     Fragment(const RSOutput& a,
              const RSOutput& b,
              const RSOutput& c,
+             const triangle<vec3d>& tangent_light_tri,
              bool is_culled)
-        : is_culled(is_culled)
+        : tangent_light_tri(tangent_light_tri)
+        , is_culled(is_culled)
     {
         this->pts[0] = a;
         this->pts[1] = b;
@@ -158,8 +175,10 @@ public:
              triangle<vec2d> tpos_tri,
              triangle<vec3d> clipped_tri,
              triangle<vec3d> screen_tri,
+             const triangle<vec3d>& tangent_light_tri,
              bool is_culled)
-        : is_culled(is_culled)
+        : tangent_light_tri(tangent_light_tri)
+        , is_culled(is_culled)
     {
         pts[0].cpos = clipped_tri[0];
         pts[1].cpos = clipped_tri[1];
@@ -210,9 +229,21 @@ private:
     {
         fraxels.clear();
         triangle<TexVertex> t{
-            TexVertex{ pts[0].wpos, pts[0].wnormal, pts[0].spos, pts[0].tpos },
-            TexVertex{ pts[1].wpos, pts[1].wnormal, pts[1].spos, pts[1].tpos },
-            TexVertex{ pts[2].wpos, pts[2].wnormal, pts[2].spos, pts[2].tpos },
+            TexVertex{ pts[0].wpos,
+                       pts[0].wnormal,
+                       pts[0].spos,
+                       pts[0].tpos,
+                       tangent_light_tri[0] },
+            TexVertex{ pts[1].wpos,
+                       pts[1].wnormal,
+                       pts[1].spos,
+                       pts[1].tpos,
+                       tangent_light_tri[1] },
+            TexVertex{ pts[2].wpos,
+                       pts[2].wnormal,
+                       pts[2].spos,
+                       pts[2].tpos,
+                       tangent_light_tri[2] },
         };
 
         /* at first sort the three vertices by y-coordinate ascending so v1 is
@@ -243,7 +274,8 @@ private:
                 util::vec::Interpolate<vec3d>(
                     t[0].wnormal, t[2].wnormal, split),
                 util::vec::Interpolate<vec3d>(t[0].pixel, t[2].pixel, split),
-                util::vec::Interpolate<vec2d>(t[0].texel, t[2].texel, split));
+                util::vec::Interpolate<vec2d>(t[0].texel, t[2].texel, split),
+                util::vec::Interpolate<vec3d>(t[0].tlight, t[2].tlight, split));
             if (t[0].pixel[0] < tv.pixel[0]) {
                 bottom_flat_triangle(triangle<TexVertex>{ t[0], t[1], tv });
                 top_flat_triangle(triangle<TexVertex>{ t[1], tv, t[2] });
@@ -282,6 +314,8 @@ private:
                        const TexVertex& d2,
                        TexVertex& e2)
     {
+        using namespace util::vec;
+
         TexVertex e1 = t[0];
 
         const int y_start = static_cast<int>(t[0].pixel[1]);
@@ -304,7 +338,8 @@ private:
                     Fraxel{ init_line.wpos,
                             init_line.wnormal,
                             vec3d{ (float)x, (float)y, init_line.pixel[2] },
-                            texel });
+                            texel,
+                            init_line.tlight });
             }
         }
     };

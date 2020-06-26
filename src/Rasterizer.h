@@ -1,7 +1,7 @@
 #pragma once
 
 #include "Fragment.h"
-#include "Vertex.h"
+#include "VertexShader.h"
 #include "window.h"
 
 class Rasterizer
@@ -24,7 +24,8 @@ public:
 
             bool is_culled = culling(vst.cposTriangle());
 
-            res.push_back(Fragment{ rso0, rso1, rso2, is_culled });
+            res.push_back(
+                Fragment{ rso0, rso1, rso2, vst.tangent_light_tri, is_culled });
         }
         return res;
     }

@@ -28,26 +28,29 @@ public:
 
             Fragment _fragment{ fragment };
             for (auto& fraxel : _fragment.fraxels) {
-                fraxel.wnormal = fraxel.wnormal.normalize();
+                const auto fraxel_normal = rsc->getNormal(fraxel.texel);
+                // fraxel.wnormal = fraxel.wnormal.normalize();
+
                 SDL_Color c = rsc->pixel(fraxel.texel[0], fraxel.texel[1]);
                 vec3d _c{ c.r / 255.f, c.g / 255.f, c.b / 255.f };
 
-                const vec3d light_direction =
-                    (light->pos - fraxel.wpos).normalize();
+                // const vec3d light_direction =
+                //     (fraxel.TBL * (light->pos - fraxel.wpos)).normalize();
+                const vec3d light_direction = fraxel.tlight;
 
                 // Diffuse Relfection
                 const vec3d pD =
                     light_color *
-                    std::max(Dot(light_direction, fraxel.wnormal), 0.0f);
+                    std::max(Dot(light_direction, fraxel_normal), 0.0f);
                 // Specular Reflection
-                const vec3d sRefl = fraxel.wnormal * 2.0f *
-                                        Dot(fraxel.wnormal, light_direction) -
-                                    light_direction;
+                const vec3d sRefl =
+                    fraxel_normal * 2.0f * Dot(fraxel_normal, light_direction) -
+                    light_direction;
                 const vec3d sView = (cam->pos - fraxel.wpos).normalize();
                 float specular = std::max(
                     std::pow(std::max(Dot(sRefl, sView), 0.0f), 5), 0.0);
                 const vec3d pS = light_color * specular;
-                const vec3d pA{ 0.1f, 0.1f, 0.1f };
+                const vec3d pA = rsc->getAmbient(fraxel.texel);
 
                 vec3d color = pD * _c + pS * _c + pA * _c;
                 color.clamp();

@@ -5,10 +5,14 @@
 
 namespace util {
 namespace draw {
-inline SDL_Color GetPixel(const SDL_Surface* const surface,
+
+inline SDL_Color GetPixel(const SDL_Surface* surface,
                           const uint x,
                           const uint y)
 {
+    if (0 > x || 0 > y || surface->w <= x || surface->h <= y)
+        throw std::out_of_range("Invalid texcoordinate");
+
     int bpp = surface->format->BytesPerPixel;
     /* Here p is the address to the pixel we want to retrieve */
     uint8_t* p = (uint8_t*)surface->pixels + y * surface->pitch + x * bpp;
@@ -36,6 +40,16 @@ inline SDL_Color GetPixel(const SDL_Surface* const surface,
     SDL_Color rgb;
     SDL_GetRGBA(_pixel, surface->format, &rgb.r, &rgb.g, &rgb.b, &rgb.a);
     return rgb;
+}
+inline SDL_Color GetPixel(const SDL_Surface* surface, const vec2d& tex_coord)
+{
+    if (0 > tex_coord[0] || 1 < tex_coord[0] || 0 > tex_coord[1] ||
+        1 < tex_coord[1])
+        throw std::out_of_range("Invalid texcoordinate");
+
+    const uint _x = std::fmod(surface->w * tex_coord[0], surface->w - 1.0f);
+    const uint _y = std::fmod(surface->h * tex_coord[1], surface->h - 1.0f);
+    return GetPixel(surface, _x, _y);
 }
 
 }; // namespace draw

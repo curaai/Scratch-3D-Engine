@@ -10,29 +10,64 @@
 #include "SDL_image.h"
 #endif
 
+#include "util_draw.h"
 #include <string>
 
 struct Texture
 {
     Texture(const std::string& color_path)
         : color_path(color_path)
-        , isColored(false)
+        , is_colored(false)
+        , is_textured(false)
     {
         color_map = IMG_Load(color_path.c_str());
         auto res = SDL_GetError();
     }
     Texture(SDL_Color c)
-        : isColored(true)
+        : is_colored(true)
     {
+        is_textured = false;
         solid_color.r = c.r;
         solid_color.g = c.g;
         solid_color.b = c.b;
         solid_color.a = c.a;
     }
 
+    void setTexture(const std::string& normal_path,
+                    const std::string& ambient_path)
+    {
+        is_textured = true;
+        is_colored = false;
+        normal_map = IMG_Load(normal_path.c_str());
+        ambient_map = IMG_Load(ambient_path.c_str());
+    }
+
+    vec3d getNormal(vec2d tex_coord) const
+    {
+        if (!is_textured)
+            throw std::out_of_range("Texture didn't initialize with normal");
+
+        auto rgb = util::draw::GetPixel(normal_map, tex_coord);
+        vec3d normal{ (float)rgb.r / 255,
+                      (float)rgb.g / 255,
+                      (float)rgb.b / 255 };      // rgb -> [0, 1]
+        return (normal * 2.0 - 1.0).normalize(); // [0, 1] -> [-1, 1]
+    }
+    vec3d getAmbient(vec2d tex_coord) const
+    {
+        if (!is_textured)
+            throw std::out_of_range("Texture didn't initialize with normal");
+
+        auto rgb = util::draw::GetPixel(ambient_map, tex_coord);
+        vec3d ambient{ (float)rgb.r / 255,
+                       (float)rgb.g / 255,
+                       (float)rgb.b / 255 };      // rgb -> [0, 1]
+        return (ambient * 2.0 - 1.0).normalize(); // [0, 1] -> [-1, 1]
+    }
+
     SDL_Color pixel(float x, float y) const
     {
-        if (isColored) {
+        if (is_colored) {
             return solid_color;
         } else {
             const uint _x = std::fmod(color_map->w * x, color_map->w - 1.0f);
@@ -42,7 +77,7 @@ struct Texture
     }
     SDL_Color pixel(const uint x, const uint y) const
     {
-        if (!isColored)
+        if (is_colored)
             return solid_color;
 
         int bpp = color_map->format->BytesPerPixel;
@@ -76,19 +111,21 @@ struct Texture
         return rgb;
     }
 
-    bool isColored;
+    bool is_colored;
     SDL_Color solid_color;
 
     // texture elements
     std::string color_path;
     SDL_Surface* color_map;
+
+    bool is_textured;
     // height elements
     std::string height_path;
     SDL_Surface* height_map;
     // normal elements
     std::string normal_path;
     SDL_Surface* normal_map;
-    // // ambient elements
-    // std::string ambient_path;
-    // SDL_Surface* ambient_map;
+    // ambient elements
+    std::string ambient_path;
+    SDL_Surface* ambient_map;
 };
