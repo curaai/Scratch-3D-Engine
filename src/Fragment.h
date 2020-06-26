@@ -154,7 +154,7 @@ class Fragment : public triangle<RSOutput>
 public:
     std::vector<Fraxel> fraxels;
     triangle<vec3d> tangent_light_tri;
-    const bool is_culled;
+    bool is_culled;
 
     Fragment(const RSOutput& a,
              const RSOutput& b,
