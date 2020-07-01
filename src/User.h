@@ -12,6 +12,22 @@
 #include "SDL.h"
 #endif
 
+enum class EUserMove
+{
+    LEFT = SDLK_LEFT,
+    RIGHT = SDLK_RIGHT,
+    FORWARD = SDLK_UP,
+    BACKWARD = SDLK_DOWN
+};
+
+enum class EUserTurn
+{
+    LEFT = SDLK_a,
+    RIGHT = SDLK_d,
+    UP = SDLK_w,
+    DOWN = SDLK_s
+};
+
 class User : public Camera
 {
 public:
@@ -23,45 +39,45 @@ public:
     void keyEvent(SDL_Keycode key)
     {
         if (move_keys.find(key) != move_keys.end())
-            move(key);
+            move(static_cast<EUserMove>(key));
         else if (rotate_keys.find(key) != rotate_keys.end())
-            turn(key);
+            turn(static_cast<EUserTurn>(key));
     }
-    void move(SDL_Keycode key)
+    void move(EUserMove key)
     {
         vec3d move_vec;
         switch (key) {
-            case SDLK_LEFT:
-                move_vec = vec3d{ speed, 0, 0 };
+            case EUserMove::LEFT:
+                move_vec = vec3d{ -move_speed, 0, 0 };
                 break;
-            case SDLK_RIGHT:
-                move_vec = vec3d{ -speed, 0, 0 };
+            case EUserMove::RIGHT:
+                move_vec = vec3d{ move_speed, 0, 0 };
                 break;
-            case SDLK_UP:
-                move_vec = vec3d{ 0, 0, speed };
+            case EUserMove::FORWARD:
+                move_vec = vec3d{ 0, 0, move_speed };
                 break;
-            case SDLK_DOWN:
-                move_vec = vec3d{ 0, 0, -speed };
+            case EUserMove::BACKWARD:
+                move_vec = vec3d{ 0, 0, -move_speed };
                 break;
         }
         auto rotate_mat = util::mat::GetRotationMat(rotation);
         setCameraPos(pos + rotate_mat * move_vec);
     }
-    void turn(SDL_Keycode key)
+    void turn(EUserTurn key)
     {
         vec3d rotate_vec;
         switch (key) {
-            case SDLK_a:
-                rotate_vec = vec3d{ 0, 5, 0 };
+            case EUserTurn::LEFT:
+                rotate_vec = vec3d{ 0, -turn_speed, 0 };
                 break;
-            case SDLK_d:
-                rotate_vec = vec3d{ 0, -5, 0 };
+            case EUserTurn::RIGHT:
+                rotate_vec = vec3d{ 0, turn_speed, 0 };
                 break;
-            case SDLK_w:
-                rotate_vec = vec3d{ -5, 0, 0 };
+            case EUserTurn::UP:
+                rotate_vec = vec3d{ -turn_speed, 0, 0 };
                 break;
-            case SDLK_s:
-                rotate_vec = vec3d{ 5, 0, 0 };
+            case EUserTurn::DOWN:
+                rotate_vec = vec3d{ turn_speed, 0, 0 };
                 break;
             default:
                 break;
@@ -82,5 +98,6 @@ public:
         SDLK_s,
     };
 
-    float speed = 0.5;
+    float move_speed = 0.5;
+    float turn_speed = 5;
 };
