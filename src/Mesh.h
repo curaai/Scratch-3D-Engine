@@ -1,7 +1,6 @@
 #pragma once
 
 #include <fstream>
-#include <sstream>
 #include <string>
 #include <tuple>
 #include <vector>
@@ -94,30 +93,34 @@ public:
         VertexBuffer nvb;
 
         char _type[2];
+        std::vector<vec3d>* _vertexes;
         while (in.good()) {
             char line[128];
             in.getline(line, 128);
-
-            std::stringstream ss;
-            ss << line;
+            const auto sp = util::str::Split(std::string{ line }, " ");
 
             // vertex
             if (line[0] == 'v') {
-                vec3d vertex;
-                ss >> _type >> vertex[0] >> vertex[1] >> vertex[2];
+                vec3d v{
+                    stof(sp[1]), stof(sp[2]), line[1] != 't' ? stof(sp[3]) : 0
+                }; // tex vertexes dosent' have third coord
+
                 if (line[1] == 'n')
-                    nvb.vertexes.push_back(vertex);
+                    _vertexes = &nvb.vertexes;
                 else if (line[1] == 't')
-                    tvb.vertexes.push_back(vertex);
+                    _vertexes = &tvb.vertexes;
                 else if (line[1] == ' ')
-                    vb.vertexes.push_back(vertex);
+                    _vertexes = &vb.vertexes;
+                // else
+                //     throw std::invalid_argument(
+                //         "Invalid type for loading .obj file");
+
+                _vertexes->push_back(v);
             }
 
             else if (line[0] == 'f') {
                 if (is_textured) {
-                    std::string f[3];
-                    ss >> _type >> f[0] >> f[1] >> f[2];
-
+                    std::string f[3]{ sp[1], sp[2], sp[3] };
                     verIdx ver_idx, tex_idx, norm_idx;
                     verIdx* idx;
 
@@ -141,13 +144,8 @@ public:
                     tvb.indices.push_back(tex_idx);
                     nvb.indices.push_back(norm_idx);
                 } else {
-                    int ver_idx[3];
-                    ss >> _type >> ver_idx[0] >> ver_idx[1] >> ver_idx[2];
-                    vb.indices.push_back({
-                        ver_idx[0] - 1,
-                        ver_idx[1] - 1,
-                        ver_idx[2] - 1,
-                    });
+                    vb.indices.push_back(
+                        { stoi(sp[1]) - 1, stoi(sp[2]) - 1, stoi(sp[3]) - 1 });
                 }
             }
         }
