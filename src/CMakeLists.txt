@@ -4,8 +4,18 @@ SET( BINARY ${CMAKE_PROJECT_NAME} )
 SET( EXECUTABLE_OUTPUT_PATH ${CMAKE_SOURCE_DIR} )
 SET( LIBRARY_OUTPUT_PATH ${CMAKE_SOURCE_DIR} )
 
-PKG_SEARCH_MODULE(SDL2 REQUIRED sdl2)
-PKG_SEARCH_MODULE(SDL2IMAGE REQUIRED SDL2_image>=2.0.0)
+
+if(APPLE)
+    link_directories(/usr/local/lib)
+    set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_SOURCE_DIR}/cmake_modules")
+    find_package(SDL2 REQUIRED SDL2)
+    find_package(SDL2_IMAGE REQUIRED SDL2_image>=2.0.0)
+else()
+    include(FindPkgConfig)
+    PKG_SEARCH_MODULE(SDL2 REQUIRED sdl2)
+    PKG_SEARCH_MODULE(SDL2IMAGE REQUIRED SDL2_image>=2.0.0)
+endif()
+
 INCLUDE_DIRECTORIES(${SDL2_INCLUDE_DIRS} ${SDL2IMAGE_INCLUDE_DIRS})
 
 # set source and headers
@@ -13,16 +23,7 @@ FILE(GLOB_RECURSE SRC_FILES LIST_DIRECTORIES false *.h *.cpp)
 
 message("Build static library first")
 ADD_LIBRARY(${BINARY}_lib STATIC ${SRC_FILES} )
-TARGET_LINK_LIBRARIES( ${BINARY}_lib PUBLIC ${SDL2_LIBRARIES} ${SDL2IMAGE_LIBRARIES})
-
-# Interprocedural optimization
-include(CheckIPOSupported)
-check_ipo_supported(RESULT result)
-if(result)
-    set_target_properties(${BINARY}_lib PROPERTIES INTERPROCEDURAL_OPTIMIZATION TRUE)
-    message("Successed to Interprocedural optimization for LIB")
-endif()
-
+TARGET_LINK_LIBRARIES( ${BINARY}_lib PUBLIC SDL2 SDL2_image)
 
 ADD_EXECUTABLE( ${BINARY}_run main.cpp )
 TARGET_LINK_LIBRARIES( ${BINARY}_run PRIVATE ${BINARY}_lib)

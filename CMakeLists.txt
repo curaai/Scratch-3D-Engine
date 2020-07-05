@@ -6,8 +6,6 @@ project( ${proj_name}   VERSION 0.1
                         LANGUAGES CXX 
 )
 
-include(FindPkgConfig)
-
 # C++ settings
 set(CMAKE_CXX_STANDARD 14)
 set(CMAKE_CXX_STANDARD_REQUIRED True)
