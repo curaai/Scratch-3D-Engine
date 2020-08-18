@@ -1,6 +1,6 @@
-# Doom-engine
+# Scratch 3D Engine
 
- make own Doom-game!
+ make own 3D Engine from scratch.
 
 ## Demo 
  
@@ -12,7 +12,7 @@
 
 ## Make 3D engine 
 
- ![simple-3d-cube](docs/simple_cube.gif)
+ ![simple-3d-cube](docs/bump_mapped_cube.gif)
 
 ### reference
 
