@@ -1,21 +1,30 @@
-CMAKE_MINIMUM_REQUIRED (VERSION 3.15 )
+CMAKE_MINIMUM_REQUIRED (VERSION 3.10.2)
 # project setting
 SET( BINARY ${CMAKE_PROJECT_NAME} )
 SET( EXECUTABLE_OUTPUT_PATH ${CMAKE_SOURCE_DIR} )
 SET( LIBRARY_OUTPUT_PATH ${CMAKE_SOURCE_DIR} )
 
-# Add Subdirectory as library core engine 
-add_subdirectory(./Engine ../build/src/engine)
 
-# loading SDL2 package 
-FIND_PACKAGE(SDL2 REQUIRED)
-INCLUDE_DIRECTORIES(${SDL2_INCLUDE_DIRS}) 
+if(APPLE)
+    link_directories(/usr/local/lib)
+    set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_SOURCE_DIR}/cmake_modules")
+    find_package(SDL2 REQUIRED SDL2)
+    find_package(SDL2_IMAGE REQUIRED SDL2_image>=2.0.0)
+else()
+    include(FindPkgConfig)
+    PKG_SEARCH_MODULE(SDL2 REQUIRED sdl2)
+    PKG_SEARCH_MODULE(SDL2IMAGE REQUIRED SDL2_image>=2.0.0)
+endif()
+
+INCLUDE_DIRECTORIES(${SDL2_INCLUDE_DIRS} ${SDL2IMAGE_INCLUDE_DIRS})
 
 # set source and headers
 FILE(GLOB_RECURSE SRC_FILES LIST_DIRECTORIES false *.h *.cpp)
 
-# build 
-ADD_EXECUTABLE( ${BINARY}_run  ${SRC_FILES} )
+message("Build static library first")
 ADD_LIBRARY(${BINARY}_lib STATIC ${SRC_FILES} )
-TARGET_LINK_LIBRARIES( ${BINARY}_run  ${SDL2_LIBRARIES})
-TARGET_LINK_LIBRARIES( ${BINARY}_lib  ${SDL2_LIBRARIES})
+TARGET_LINK_LIBRARIES( ${BINARY}_lib PUBLIC SDL2 SDL2_image)
+
+ADD_EXECUTABLE( ${BINARY}_run main.cpp )
+TARGET_LINK_LIBRARIES( ${BINARY}_run PRIVATE ${BINARY}_lib)
+

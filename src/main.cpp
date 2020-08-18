@@ -1,80 +1,118 @@
-﻿// Doom-engine.cpp : 이 파일에는 'main' 함수가 포함됩니다. 거기서 프로그램 실행이 시작되고 종료됩니다.
-//
-
+#include "FragmentShader.h"
+#include "Rasterizer.h"
+#include "User.h"
+#include "VertexShader.h"
 #include "window.h"
-#include "RelativeWindow.h"
-#include "world.h"
-#include "user.h"
-#include "wall.h"
-#include "bean.h"
-#include "Engine/RayCasting.h"
 
+#include <ctime>
 #include <iostream>
-#include <SDL.h>
 
-#define MAIN_MAP_W 1280
-#define MAIN_MAP_H 640
+constexpr uint w = 480;
+constexpr uint h = 480;
+
+using namespace std;
 
 int main(int argc, char* argv[])
 {
-	User* user = new User(160, 160, rgba {255, 255, 0, 255});
-	auto win2d = new RelativeWindow("2d", 640, 640, user);
-	auto win3d = new RelativeWindow("3d", 640, 640, user);
-	// win->relativeMode = false;
-	auto world = new World();
-	Wall* wall1 = new Wall(Point{0, 0}, Point{0, 600}, rgba{255, 0, 0, 255});
-	Wall* wall2 = new Wall(Point{0, 0}, Point{600, 0}, rgba{255, 255, 0, 255});
-	Wall* wall3 = new Wall(Point{600, 0}, Point{600, 600}, rgba{0, 255, 0, 255});
-	Wall* wall4 = new Wall(Point{0, 600}, Point{600, 600}, rgba{0, 0, 255, 255});
-	// Wall* wall2 = new Wall(Point{50, 50}, Point{400, 400}, rgba{0, 0, 255, 255});
+    Window* win = new Window{ "3D engine", w, h };
 
-	world->addElement(wall1);
-	world->addElement(wall2);
-	world->addElement(wall3);
-	world->addElement(wall4);
-	// world->addElement(wall2);
+    User user{ vec3d{ 0, 0, 0 }, w / h, 60 };
 
-	RayEngine* engine = new RayEngine(*user, *world);
+    Texture texture{ "resource/brick/color.jpg" };
+    texture.setTexture("resource/brick/normal.jpg",
+                       "resource/brick/ambient.jpg");
+    Drawable drawObj{ Mesh::loadFromObj("resource/cube.obj", true), texture };
+    drawObj.setTranslate(vec3d{ 0, 0, 5.0f });
 
-	SDL_Keycode key;
-	SDL_Event event;
-	while (win2d->running()) {
-		while(SDL_PollEvent(&event))
-		{
-			switch(event.type) 
-			{
-			case SDL_KEYDOWN:
-				key = event.key.keysym.sym;
-				switch(key) {
-					case SDLK_LEFT:
-					case SDLK_RIGHT:
-						user->turn(key);
-						break; 
-					case SDLK_w:
-					case SDLK_a:
-					case SDLK_d:
-					case SDLK_s:
-						user->move(key);
-						break;
-				}
-				break;
+    Light light;
+    light.setTranslate(vec3d{ 0, 0, -10 });
 
-			case SDL_QUIT:
-				break;
-			}
-		}
+    FragmentShader fs{ &light, &user };
 
-		win2d->update();
-		win2d->render(world->getElements());
-		engine->draw2d(win2d->_renderer);
-		SDL_RenderPresent(win2d->_renderer);
+    float t = 0;
 
-		SDL_RenderClear(win3d->_renderer);
-		engine->draw3d(win3d->_renderer);
-		SDL_RenderPresent(win3d->_renderer);
-	}
-	delete win2d;
-	delete win3d;
+    unsigned int debug_flags = 0;
+    debug_flags |= 1 << 5 | 1 << 11;
 
-	return 0;
+    SDL_Keycode key;
+    SDL_Event event;
+    while (win->running()) {
+        while (SDL_PollEvent(&event)) {
+            switch (event.type) {
+                case SDL_QUIT:
+                    win->is_running = false;
+                    break;
+                case SDL_KEYDOWN: {
+                    auto key = event.key.keysym.sym;
+#ifndef NDEBUG
+                    switch (key) {
+                        case SDLK_1:
+                            debug_flags ^= 1;
+                            break;
+                        case SDLK_2:
+                            debug_flags ^= 1 << 1;
+                            break;
+                        case SDLK_3:
+                            debug_flags ^= 1 << 2;
+                            break;
+                        case SDLK_4:
+                            debug_flags ^= 1 << 3;
+                            break;
+                        case SDLK_5:
+                            debug_flags ^= 1 << 4;
+                            break;
+                        case SDLK_6:
+                            debug_flags ^= 1 << 5;
+                            break;
+                        case SDLK_7:
+                            debug_flags ^= 1 << 6;
+                            break;
+                        case SDLK_8:
+                            debug_flags ^= 1 << 7;
+                            break;
+                        case SDLK_9:
+                            debug_flags ^= 1 << 8;
+                            break;
+                        case SDLK_q:
+                            debug_flags ^= 1 << 9;
+                            break;
+                        case SDLK_w:
+                            debug_flags ^= 1 << 10;
+                            break;
+                        case SDLK_e:
+                            debug_flags ^= 1 << 11;
+                            break;
+                    }
+#else
+                    user.keyEvent(key);
+#endif
+                    break;
+                }
+            }
+        }
+
+        drawObj.setRotate(vec3d{ t, 0, -t });
+        auto vst_list = VertexShader::vertexing(&drawObj, &user);
+        for (auto& vst : vst_list)
+            vst.initTangentLight(light);
+
+        std::vector<Fragment> fragments = Rasterizer::rasterize(win, vst_list);
+#ifndef NDEBUG
+        t = 0;
+        for (int i = 0; i < 12; i++)
+            if (debug_flags & (1 << i))
+                fragments[i].is_culled = true;
+#endif
+        fragments = fs.lighting(fragments, &drawObj.texture);
+
+        t += 1;
+
+        win->render(fragments);
+
+        win->update();
+        SDL_RenderPresent(win->_renderer);
+    }
+    delete win;
+
+    return 0;
 }
