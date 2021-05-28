@@ -2,14 +2,6 @@
 
  make own 3D Engine from scratch.
 
-## Demo 
- 
-### minimap Temp Demo 
- ![2d_raycasting](docs/2d-simple_ray-casting.gif)
-
-### Manhattan-Distance based modeling Demo 
- ![3d-modelling](docs/temp-3d-modeling_mahattan_based.gif)
-
 ## Make 3D engine 
 
  ![simple-3d-cube](docs/bump_mapped_cube.gif)
